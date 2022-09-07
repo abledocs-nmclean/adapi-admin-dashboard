@@ -9,7 +9,7 @@ For VS Code configuration, the `launch.json.template` file under `.vscode` shoul
 
 ## Available Scripts
 
-In the project driectory, you can run:
+In the project directory, you can run:
 
 ### `npm start`
 
