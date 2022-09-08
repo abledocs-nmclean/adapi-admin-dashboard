@@ -3,7 +3,7 @@ ADapi internal system administration dashboard web application
 
 ## Getting Started
 
-The `.env.local.template` file should be copied to a local `.env.local` file. Secret environment variable values need to be filled in locally. Any non-secret environment variables can be added to the `.env` file, which is tracked in source control.
+The `*.local.template` files should be copied to local corresponding `*.local` files, and missing environment variable values need to be filled in. Any non-secret and non-local environment variables can be added to the `.env` files, which are tracked in source control.
 
 For VS Code configuration, the `launch.json.template` file under `.vscode` should be copied to your local `launch.json`.
 
