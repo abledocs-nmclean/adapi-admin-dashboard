@@ -4,18 +4,16 @@ import * as API from './api'
 import './Login.css';
 
 export default function Login() {
+    const navigate = useNavigate();
+
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
-    const [isValid, setIsValid] = React.useState(false);
 
-    const navigate = useNavigate();
-
-    React.useEffect(() => onCredentialsChanged, [username, password]);
-
-    function onCredentialsChanged() {
-        setIsValid(username.length > 0 && password.length > 0)
-    }
+    const isValid = React.useMemo(
+        () => username.length > 0 && password.length > 0,
+        [username, password]
+    );
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
