@@ -3,7 +3,7 @@ type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
 
 type AuthorizeRequest = {username: string, password: string, ttl?: number};
 
-type AuthenticatedUser = {username: string, jwt: string};
+export type AuthenticatedUser = {username: string, jwt: string};
 
 async function sendJson(path: string, method: HttpMethod, request: object) {
     return await fetch(
