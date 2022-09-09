@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './index.css';
 import Login from './Login';
+import Dashboard from './Dashboard';
 import reportWebVitals from './reportWebVitals';
 import { registerLicense } from '@syncfusion/ej2-base'
-import Dashboard from './Dashboard';
 
 const license = process.env.REACT_APP_SYNCFUSION_LICENSE;
 if (license !== undefined) {
@@ -13,7 +13,7 @@ if (license !== undefined) {
 }
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById('root')!
 );
 root.render(
   <React.StrictMode>
