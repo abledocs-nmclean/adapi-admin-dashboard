@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import * as API from './api'
 import './Login.css';
 
@@ -6,6 +7,7 @@ export default function Login() {
     const [username, setUsername] = React.useState<string>();
     const [password, setPassword] = React.useState<string>();
     const [isLoading, setIsLoading] = React.useState(false);
+    const navigate = useNavigate();
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -14,15 +16,17 @@ export default function Login() {
         }
         
         setIsLoading(true);
+        let response: Response | undefined;
         try {
-            const response = await API.authorize({ username, password });
-            if (!response.ok) {
-                // bad request
-            }
+            response = await API.authorize({ username, password });
         } catch {
             // todo
         } finally {
             setIsLoading(false);
+        }
+
+        if (response?.ok) {
+            navigate("/dashboard");
         }
       }
 

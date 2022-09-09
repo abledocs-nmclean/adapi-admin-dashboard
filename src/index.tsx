@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './index.css';
 import Login from './Login';
 import reportWebVitals from './reportWebVitals';
 import { registerLicense } from '@syncfusion/ej2-base'
+import Dashboard from './Dashboard';
 
 const license = process.env.REACT_APP_SYNCFUSION_LICENSE;
 if (license !== undefined) {
@@ -17,7 +18,10 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Login />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard/*" element={<Dashboard />} />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );
