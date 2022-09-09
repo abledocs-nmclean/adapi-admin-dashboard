@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import './index.css';
-import App from './App';
+import Login from './Login';
 import reportWebVitals from './reportWebVitals';
 import { registerLicense } from '@syncfusion/ej2-base'
 
@@ -16,7 +16,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Login />
+    </BrowserRouter>
   </React.StrictMode>
 );
 
