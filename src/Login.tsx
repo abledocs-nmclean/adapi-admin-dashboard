@@ -4,16 +4,21 @@ import * as API from './api'
 import './Login.css';
 
 export default function Login() {
-    const [username, setUsername] = React.useState<string>();
-    const [password, setPassword] = React.useState<string>();
+    const [username, setUsername] = React.useState("");
+    const [password, setPassword] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isValid, setIsValid] = React.useState(false);
+
     const navigate = useNavigate();
+
+    React.useEffect(() => onCredentialsChanged, [username, password]);
+
+    function onCredentialsChanged() {
+        setIsValid(username.length > 0 && password.length > 0)
+    }
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (username === undefined || password === undefined) {
-            return;
-        }
         
         setIsLoading(true);
         let response: Response | undefined;
@@ -36,7 +41,7 @@ export default function Login() {
             <input name="username" type="text" value={username} onChange={e => setUsername(e.target.value)} />
             <label htmlFor="password">Password:</label>
             <input name="password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-            <button type="submit" disabled={isLoading}>Login</button>
+            <button type="submit" disabled={isLoading || !isValid}>Login</button>
         </form>
       );
 }
