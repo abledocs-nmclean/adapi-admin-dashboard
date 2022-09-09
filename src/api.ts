@@ -1,7 +1,7 @@
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
 
-type AuthorizeRequest = {username: string, password: string, ttl?: number};
+export type AuthorizeRequest = {username: string, password: string, ttl?: number};
 
 export type AuthenticatedUser = {username: string, jwt: string};
 
