@@ -34,15 +34,15 @@ export default function Login() {
     }
 
     return (
-    <form onSubmit={handleLogin}>
-        <label htmlFor="username">Username:</label>
-        <input name="username" type="text"
-                value={username} onChange={e => setUsername(e.target.value)} />
-        <label htmlFor="password">Password:</label>
-        <input name="password" type="password"
-                value={password} onChange={e => setPassword(e.target.value)} />
-        <button type="submit" disabled={isLoading || !isValid}>Login</button>
-    </form>
+        <form onSubmit={handleLogin}>
+            <label htmlFor="username">Username:</label>
+            <input name="username" type="text"
+                    value={username} onChange={e => setUsername(e.target.value)} />
+            <label htmlFor="password">Password:</label>
+            <input name="password" type="password"
+                    value={password} onChange={e => setPassword(e.target.value)} />
+            <button type="submit" disabled={isLoading || !isValid}>Login</button>
+        </form>
     );
 }
       
