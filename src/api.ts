@@ -2,8 +2,6 @@ import { clearUser, setUser, getAuthHeader } from './user';
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
 
-export type AuthorizeRequest = {username: string, password: string, ttl?: number};
-
 async function sendJson(path: string, method: HttpMethod, body: object | null, headers=new Headers()) {
     const requestInit: RequestInit = { method, headers };
     if (body !== null) {

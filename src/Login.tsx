@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import * as API from './api'
+import { authorize } from './api'
 import './Login.css';
 
 export default function Login() {
@@ -21,7 +21,7 @@ export default function Login() {
         setIsLoading(true);
         let response: Response | undefined;
         try {
-            response = await API.authorize({ username, password });
+            response = await authorize({ username, password });
         } catch {
             // todo
         } finally {
@@ -30,6 +30,8 @@ export default function Login() {
 
         if (response?.ok) {
             navigate("/dashboard");
+        } else {
+            // todo
         }
     }
 
