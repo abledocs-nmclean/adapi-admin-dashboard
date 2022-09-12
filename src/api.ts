@@ -23,3 +23,6 @@ export async function authorize(request: AuthorizeRequest) {
     return response;
 }
 
+export async function getAllCompanies() {
+    return await sendJson("companies", "GET", null, new Headers(getAuthHeader()));
+}
