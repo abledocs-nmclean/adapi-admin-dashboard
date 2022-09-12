@@ -15,12 +15,13 @@ export function getUser() {
     return JSON.parse(userItem) as AuthenticatedUser;
 }
 
-async function sendJson(path: string, method: HttpMethod, body: object) {
+async function sendJson(path: string, method: HttpMethod, body: object, headers=new Headers()) {
+    headers.set("Content-Type", "application/json");
     return await fetch(    
         `${process.env.REACT_APP_ADAPI_BASE_URL}/${path}`,
         {
             method,
-            headers: { "Content-Type": "application/json" },
+            headers,
             body: JSON.stringify(body)
         }
     );
@@ -36,3 +37,4 @@ export async function authorize(request: AuthorizeRequest) {
     }
     return response;
 }
+
