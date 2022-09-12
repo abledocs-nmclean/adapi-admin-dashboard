@@ -1,19 +1,8 @@
+import { clearUser, setUser } from './user';
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
 
 export type AuthorizeRequest = {username: string, password: string, ttl?: number};
-
-export type AuthenticatedUser = {username: string, jwt: string};
-
-export function getUser() {
-    const userItem = localStorage.getItem("user");
-
-    if (userItem === null) {
-        return null;
-    }
-
-    return JSON.parse(userItem) as AuthenticatedUser;
-}
 
 async function sendJson(path: string, method: HttpMethod, body: object, headers=new Headers()) {
     headers.set("Content-Type", "application/json");
@@ -28,12 +17,11 @@ async function sendJson(path: string, method: HttpMethod, body: object, headers=
 }
 
 export async function authorize(request: AuthorizeRequest) {
-    localStorage.removeItem("user");
+    clearUser();
     const response = await sendJson("authorize", "POST", request);
     if (response.ok) {
         const jwt = await response.text();
-        const user: AuthenticatedUser = {username: request.username, jwt};
-        localStorage.setItem("user", JSON.stringify(user));
+        setUser({username: request.username, jwt});
     }
     return response;
 }
