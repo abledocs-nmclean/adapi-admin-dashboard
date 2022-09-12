@@ -5,13 +5,23 @@ export type AuthorizeRequest = {username: string, password: string, ttl?: number
 
 export type AuthenticatedUser = {username: string, jwt: string};
 
-async function sendJson(path: string, method: HttpMethod, request: object) {
-    return await fetch(
+export function getUser() {
+    const userItem = localStorage.getItem("user");
+
+    if (userItem === null) {
+        return null;
+    }
+
+    return JSON.parse(userItem) as AuthenticatedUser;
+}
+
+async function sendJson(path: string, method: HttpMethod, body: object) {
+    return await fetch(    
         `${process.env.REACT_APP_ADAPI_BASE_URL}/${path}`,
         {
             method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(request)
+            body: JSON.stringify(body)
         }
     );
 }
@@ -26,4 +36,3 @@ export async function authorize(request: AuthorizeRequest) {
     }
     return response;
 }
-
