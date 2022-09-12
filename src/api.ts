@@ -1,3 +1,4 @@
+import { AuthorizeRequest } from './model';
 import { clearUser, setUser, getAuthHeader } from './user';
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
