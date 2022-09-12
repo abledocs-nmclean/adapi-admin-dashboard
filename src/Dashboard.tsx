@@ -24,6 +24,8 @@ export default function Dashboard() {
 
         if (response?.ok) {
             setCompanies(await response.json());
+        } else if (response?.status == 401) {
+            return <Navigate to="/" replace />;
         }
     }
 
