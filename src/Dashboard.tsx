@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { ColumnDirective, ColumnsDirective, GridComponent } from '@syncfusion/ej2-react-grids';
 import { getUser } from './user';
 import { getAllCompanies } from './api';
 import { Company } from './model';
