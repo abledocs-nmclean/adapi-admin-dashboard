@@ -43,5 +43,13 @@ export default function Dashboard() {
 
     return (<>
         User "{user.username}" logged in.
+        <h1>Companies</h1>
+        <GridComponent dataSource={companiesQuery.data}>
+            <ColumnsDirective>
+                <ColumnDirective headerText="Name" field="name" />
+                <ColumnDirective headerText="Active" width={100} field="isActive" />
+                <ColumnDirective headerText="Trial" width={100} field="isTrial"  />
+            </ColumnsDirective>
+        </GridComponent>
     </>);
 }
