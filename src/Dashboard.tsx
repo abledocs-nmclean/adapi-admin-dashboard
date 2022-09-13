@@ -28,11 +28,10 @@ export default function Dashboard() {
     async function loadCompanies() {
         const response = await getAllCompanies();
 
-        if (response.status == 401) {
-            clearUser();
-        }
-
         if (!response.ok) {
+            if (response.status == 401) {
+                clearUser();
+            }
             throw new Error(response.statusText);
         }
 
