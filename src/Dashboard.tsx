@@ -28,29 +28,20 @@ export default function Dashboard() {
     }
 
     async function loadCompanies() {
-        let response: Response | undefined;
-        try {
-            response = await getAllCompanies();
-        } catch {
-            return [];
-        }
+        const response = await getAllCompanies();
 
         if (response.status == 401) {
             navigate("/login");
-            // return [];
         }
 
-        if (response.ok) {
-            return await response.json() as Company[];            
+        if (!response.ok) {
+            throw new Error(response.statusText);
         }
 
-        return [];
+        return await response.json() as Company[];            
     }
 
     return (<>
         User "{user.username}" logged in.
-        {/* <ul>
-            {companies.map(company => <li>{company.name}</li>)}
-        </ul> */}
     </>);
 }
