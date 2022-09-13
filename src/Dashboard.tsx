@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { GridComponent, ColumnDirective, ColumnsDirective, DataResult, Inject, Page, Sort, Filter, Group } from '@syncfusion/ej2-react-grids';
-import { getUser } from './user';
+import { getUser, clearUser } from './user';
 import { getAllCompanies } from './api';
 import { Company } from './model';
 import './Dashboard.css';
@@ -11,8 +11,6 @@ export default function Dashboard() {
     useEffect(() => {
         document.title = "Dashboard";
     }, []);
-
-    const navigate = useNavigate();
 
     const user = getUser();
 
@@ -31,7 +29,7 @@ export default function Dashboard() {
         const response = await getAllCompanies();
 
         if (response.status == 401) {
-            navigate("/login");
+            clearUser();
         }
 
         if (!response.ok) {
