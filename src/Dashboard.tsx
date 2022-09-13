@@ -1,36 +1,43 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { getUser } from './user';
 import { getAllCompanies } from './api';
 import { Company } from './model';
 
 export default function Dashboard() {
-    const [companies, setCompanies] = React.useState<Company[]>([]);
+    const navigate = useNavigate();
+
+    const [companies, setCompanies] = useState<Company[]>([]);
+
+    useEffect(() => { loadCompanies().catch(console.error); }, []);
 
     const user = getUser();
     if (user === null) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/login" replace />;
     }
 
-    async function handleClick() {
+    async function loadCompanies() {
         let response: Response | undefined;
         try {
             response = await getAllCompanies();
         } catch {
             // todo
-        } finally {
-
+            return;
         }
 
-        if (response?.ok) {
+        if (response.status == 401) {
+            return navigate("/login");
+        }
+
+        if (response.ok) {
             setCompanies(await response.json());
-        } else if (response?.status == 401) {
-            return <Navigate to="/" replace />;
+        } else {
+            // todo
         }
     }
 
     return (<>
-        User "{user.username}" logged in.<button onClick={handleClick}>load company list</button>
+        User "{user.username}" logged in.
         <ul>
             {companies.map(company => <li>{company.name}</li>)}
         </ul>
