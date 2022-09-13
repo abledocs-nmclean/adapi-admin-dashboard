@@ -1,9 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { authorize } from './api'
 import './Login.css';
 
 export default function Login() {
+    useEffect(() => {
+        document.title = "Login";
+    }, []);
+
     const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
