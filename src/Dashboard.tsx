@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import { getUser } from './user';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from './auth-context';
 import CompanyList from './CompanyList';
 import './Dashboard.css';
 
@@ -9,10 +9,18 @@ export default function Dashboard() {
         document.title = "Dashboard";
     }, []);
 
-    const user = getUser();
+    const { user } = useAuthContext();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user === null) {
+            navigate("/login");
+        }
+    }, [user]);
 
     if (user === null) {
-        return <Navigate to="/login" replace />;
+        return <></>;
     }
 
     return (<>
