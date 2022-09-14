@@ -1,6 +1,7 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
-import { authorize } from './api'
+import { ApiError } from './api'
+import { useAuthContext } from './auth-context';
 import './Login.css';
 
 export default function Login() {
@@ -19,25 +20,24 @@ export default function Login() {
         [username, password]
     );
 
+    const { login } = useAuthContext();
+
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         
         setIsLoading(true);
-        let response: Response | undefined;
         try {
-            response = await authorize({ username, password });
-        } catch {
-            // todo
+            await login(username, password);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                // todo
+            }
             return;
         } finally {
             setIsLoading(false);
         }
 
-        if (response.ok) {
-            navigate("/");
-        } else {
-            // todo
-        }
+        navigate("/");
     }
 
     return (
@@ -48,7 +48,7 @@ export default function Login() {
             <label htmlFor="password">Password:</label>
             <input name="password" type="password"
                    value={password} onChange={e => setPassword(e.target.value)} />
-            <button type="submit" disabled={isLoading}>Login</button>
+            <button type="submit" disabled={isLoading || !isValid}>Login</button>
         </form>
     );
 }
