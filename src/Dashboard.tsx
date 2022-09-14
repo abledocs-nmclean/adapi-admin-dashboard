@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import { useAuthContext } from './auth-context';
 import CompanyList from './CompanyList';
+import CompanyDetails from './CompanyDetails';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -23,8 +24,13 @@ export default function Dashboard() {
         return <></>;
     }
 
-    return (<>
-        User "{user.username}" logged in.
-        <CompanyList />
-    </>);
+    return (
+        <div>
+            User "{user.username}" logged in.
+            <Routes>
+                <Route index element={<CompanyList />} />
+                <Route path="company/:id" element={<CompanyDetails />} />
+            </Routes>
+        </div>
+    );
 }
