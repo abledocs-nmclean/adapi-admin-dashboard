@@ -38,18 +38,9 @@ export default function CompanyDetails() {
 
     useSpinnerEffect(usersContainerRef, usersQuery.isLoading);
 
-    const templatesQuery = useQueryWithAuth(useQuery(
-        ["users", id],
-        () => getUsersByCompany(user!, id!),
-        {
-            enabled: user !== null && id !== undefined,
-            retry: false
-        }
-    ));
-
     const templatesContainerRef = useRef<HTMLElement | null>(null);
 
-    useSpinnerEffect(templatesContainerRef, templatesQuery.isLoading);
+    useSpinnerEffect(templatesContainerRef, companyQuery.isLoading);
 
     return (
         <div>
@@ -95,13 +86,11 @@ export default function CompanyDetails() {
                 templatesContainerRef.current = div;
                 if (div) createSpinner({target: div});
             }}>
-                <GridComponent dataSource={usersQuery.data} allowSorting={true}>
+                <GridComponent dataSource={companyQuery.data?.templates} allowSorting={true}>
                     <ColumnsDirective>
-                        <ColumnDirective headerText="Username" field="username" />
-                        <ColumnDirective headerText="Email" field="email" />
-                        <ColumnDirective headerText="Trial" width={100} field="isTrial" />
-                        <ColumnDirective headerText="Active" width={100} field="isActive" />
-                        <ColumnDirective field="id" />
+                        <ColumnDirective headerText="Name" field="name" />
+                        <ColumnDirective headerText="Match" field="match" />
+                        <ColumnDirective field="commonFileId" />
                     </ColumnsDirective>
                     <Inject services={[Sort]} />
                 </GridComponent>

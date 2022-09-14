@@ -7,11 +7,11 @@ export type Company = {
     isActive: boolean,
     isTrial?: boolean,
     name: string,
-    templates: DocumentTemplate
+    templates: DocumentTemplate[]
 };
 
 export type DocumentTemplate = {
-    commonileId: string,
+    commonFileId: string,
     match: string,
     name: string,
     lang?: string,
