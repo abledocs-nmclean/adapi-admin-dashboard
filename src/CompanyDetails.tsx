@@ -5,6 +5,7 @@ import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups'
 import { useAuthContext, useQueryWithAuth } from "./auth-context";
 import { getCompany } from "./api";
 import { Company } from './model';
+import './CompanyDetails.css';
 
 type CompanyRouteParams = {id: string};
 
@@ -44,7 +45,23 @@ export default function CompanyDetails() {
 
     return (
         <div ref={initContainer}>
-            details
+            <h1>Company Details</h1>
+            <dl>
+                <dt>ID</dt>
+                <dd>{companyQuery.data?.id}</dd>
+
+                <dt>Name</dt>
+                <dd>{companyQuery.data?.name}</dd>
+
+                <dt>Trial</dt>
+                <dd>{companyQuery.data?.isTrial ? "yes" : "no"}</dd>
+
+                <dt>Active</dt>
+                <dd>{companyQuery.data?.isActive ? "yes" : "no"}</dd>
+
+                <dt>ADO Client ID</dt>
+                <dd>{companyQuery.data?.adoClientId}</dd>
+            </dl>
         </div>
     );
 }
