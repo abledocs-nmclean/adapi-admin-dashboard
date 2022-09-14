@@ -17,3 +17,16 @@ export type DocumentTemplate = {
     lang?: string,
     expiry?: string
 };
+
+export type User = {
+    id: string,
+    username: string,
+    accessKey: string,
+    companyId: string,
+    isActive: boolean,
+    partitionKey: string,
+    callbackUrlRemediation?: string,
+    callbackUrlConformanceScan?: string,
+    email?: string,
+    isTrial?: boolean
+};

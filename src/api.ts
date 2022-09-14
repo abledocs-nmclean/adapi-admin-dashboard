@@ -1,4 +1,4 @@
-import { AuthorizeRequest, Company } from './model';
+import { AuthorizeRequest, Company, User } from './model';
 import { AuthenticatedUser } from './user';
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
@@ -46,4 +46,9 @@ export async function getAllCompanies(user: AuthenticatedUser) {
 export async function getCompany(user: AuthenticatedUser, id: string) {
     const response = await sendJson(`companies/${id}`, "GET", null, new Headers(getAuthHeader(user)));
     return await response.json() as Company;
+}
+
+export async function getUsersByCompany(user: AuthenticatedUser, id: string) {
+    const response = await sendJson(`companies/${id}/users`, "GET", null, new Headers(getAuthHeader(user)));
+    return await response.json() as User[];
 }
