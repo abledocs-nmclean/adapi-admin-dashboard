@@ -42,3 +42,8 @@ export async function getAllCompanies(user: AuthenticatedUser) {
     const response = await sendJson("companies", "GET", null, new Headers(getAuthHeader(user)));
     return await response.json() as Company[];
 }
+
+export async function getCompany(user: AuthenticatedUser, id: string) {
+    const response = await sendJson(`companies/${id}`, "GET", null, new Headers(getAuthHeader(user)));
+    return await response.json() as Company;
+}
