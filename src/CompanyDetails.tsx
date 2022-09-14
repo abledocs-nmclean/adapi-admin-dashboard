@@ -42,6 +42,10 @@ export default function CompanyDetails() {
 
     useSpinnerEffect(templatesContainerRef, companyQuery.isLoading);
 
+    const filesContainerRef = useRef<HTMLElement | null>(null);
+
+    useSpinnerEffect(filesContainerRef, false);
+
     return (
         <div>
             <h1>Company Details</h1>
@@ -88,12 +92,20 @@ export default function CompanyDetails() {
             }}>
                 <GridComponent dataSource={companyQuery.data?.templates} allowSorting={true}>
                     <ColumnsDirective>
-                        <ColumnDirective headerText="Name" field="name" />
+                        <ColumnDirective headerText="Template Name" field="name" />
                         <ColumnDirective headerText="Match" field="match" />
                         <ColumnDirective field="commonFileId" />
                     </ColumnsDirective>
                     <Inject services={[Sort]} />
                 </GridComponent>
+            </div>
+
+            <h2>Template files</h2>
+            <div ref={(div) => {
+                filesContainerRef.current = div;
+                if (div) createSpinner({target: div});
+            }}>
+
             </div>
         </div>
     );
