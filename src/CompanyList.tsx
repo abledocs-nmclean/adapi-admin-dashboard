@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
+import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
 import { useAuthContext, useQueryWithAuth } from './auth-context';
 import { getAllCompanies } from './api';
 import { Company } from './model';
