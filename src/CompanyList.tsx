@@ -5,6 +5,7 @@ import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '
 import { useAuthContext, useQueryWithAuth } from './auth-context';
 import { getAllCompanies } from './api';
 import { Company } from './model';
+import { useSpinnerEffect } from "./util";
 
 export default function CompanyList() {
     const { user } = useAuthContext();
@@ -18,30 +19,17 @@ export default function CompanyList() {
         }
     ));
 
-    const containerRef = useRef<HTMLElement | null>();
+    const companiesContainerRef = useRef<HTMLElement | null>(null);
 
-    const initContainer = useCallback(
-        (container: HTMLElement | null) => {
-            containerRef.current = container;
-            if (!container) return;
-            createSpinner({
-                target: container
-            });
-        }, []);
-
-    useEffect(() => {
-        if (!containerRef.current) return;
-        if (companiesQuery.isLoading) {
-            showSpinner(containerRef.current);
-        } else {
-            hideSpinner(containerRef.current);
-        }
-    }, [companiesQuery.isLoading]);
+    useSpinnerEffect(companiesContainerRef, companiesQuery.isLoading);
 
     return (
         <div>
             <h1>Companies</h1>
-            <div ref={initContainer}>
+            <div ref={(div) => {
+                companiesContainerRef.current = div;
+                if (div) createSpinner({target: div});
+            }}>
                 <GridComponent dataSource={companiesQuery.data} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Name" field="name" />

@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from "react";
+import { HtmlHTMLAttributes, useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
@@ -6,6 +6,7 @@ import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '
 import { useAuthContext, useQueryWithAuth } from "./auth-context";
 import { getCompany, getUsersByCompany } from "./api";
 import { Company } from './model';
+import { useSpinnerEffect } from "./util";
 import './CompanyDetails.css';
 
 type CompanyRouteParams = {id: string};
@@ -33,25 +34,22 @@ export default function CompanyDetails() {
         }
     ));
 
-    const usersContainerRef = useRef<HTMLElement | null>();
+    const usersContainerRef = useRef<HTMLElement | null>(null);
 
-    const initUsersContainer = useCallback(
-        (container: HTMLElement | null) => {
-            usersContainerRef.current = container;
-            if (!container) return;
-            createSpinner({
-                target: container
-            });
-        }, []);
+    useSpinnerEffect(usersContainerRef, usersQuery.isLoading);
 
-    useEffect(() => {
-        if (!usersContainerRef.current) return;
-        if (companyQuery.isLoading) {
-            showSpinner(usersContainerRef.current!);
-        } else {
-            hideSpinner(usersContainerRef.current!);
+    const templatesQuery = useQueryWithAuth(useQuery(
+        ["users", id],
+        () => getUsersByCompany(user!, id!),
+        {
+            enabled: user !== null && id !== undefined,
+            retry: false
         }
-    }, [usersQuery.isLoading]);
+    ));
+
+    const templatesContainerRef = useRef<HTMLElement | null>(null);
+
+    useSpinnerEffect(templatesContainerRef, templatesQuery.isLoading);
 
     return (
         <div>
@@ -76,7 +74,27 @@ export default function CompanyDetails() {
             }
 
             <h2>Users</h2>
-            <div ref={initUsersContainer}>
+            <div ref={(div) => {
+                usersContainerRef.current = div;
+                if (div) createSpinner({target: div});
+            }}>
+                <GridComponent dataSource={usersQuery.data} allowSorting={true}>
+                    <ColumnsDirective>
+                        <ColumnDirective headerText="Username" field="username" />
+                        <ColumnDirective headerText="Email" field="email" />
+                        <ColumnDirective headerText="Trial" width={100} field="isTrial" />
+                        <ColumnDirective headerText="Active" width={100} field="isActive" />
+                        <ColumnDirective field="id" />
+                    </ColumnsDirective>
+                    <Inject services={[Sort]} />
+                </GridComponent>
+            </div>
+
+            <h2>Template policy</h2>
+            <div ref={(div) => {
+                templatesContainerRef.current = div;
+                if (div) createSpinner({target: div});
+            }}>
                 <GridComponent dataSource={usersQuery.data} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Username" field="username" />
