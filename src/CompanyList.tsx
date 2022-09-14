@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
-import { getUser } from './user';
+import { useAuthContext, useQueryWithAuth } from './auth-context';
 import { getAllCompanies } from './api';
 import { Company } from './model';
 
 export default function CompanyList() {
-    const user = getUser();
+    const { user } = useAuthContext();
 
-    const companiesQuery = useQuery(
+    const companiesQuery = useQueryWithAuth(useQuery(
         ["companies"],
-        getAllCompanies,
+        () => getAllCompanies(user!),
         {
-            enabled: user !== null
+            enabled: user !== null,
+            retry: false
         }
-    );
+    ));
 
     return (
         <div>
