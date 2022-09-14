@@ -1,5 +1,5 @@
-import { AuthenticatedUser } from './user';
 import { AuthorizeRequest, Company } from './model';
+import { AuthenticatedUser } from './user';
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
 

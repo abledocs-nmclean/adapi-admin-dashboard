@@ -7,6 +7,7 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import reportWebVitals from './reportWebVitals';
 import { registerLicense } from '@syncfusion/ej2-base'
+import { AuthProvider } from './auth-context';
 
 const license = process.env.REACT_APP_SYNCFUSION_LICENSE;
 if (license !== undefined) {
@@ -20,14 +21,16 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   // <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/*" element={<Dashboard />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/*" element={<Dashboard />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </AuthProvider>
   // </React.StrictMode>
 );
 
