@@ -45,10 +45,11 @@ export function useAuthContext() {
     return useContext(AuthContext)!;
 }
 
+// wrap a query that uses authorization, to trigger a logout when an Unauthorized response is returned
 export function useQueryWithAuth<TQuery extends QueryObserverBaseResult>(query: TQuery) {
     const context = useAuthContext();
 
-    if (query?.isError && query.error instanceof ApiError && query.error.status == 401) {
+    if (query.isError && query.error instanceof ApiError && query.error.status == 401) {
         context.logout();
     }
 

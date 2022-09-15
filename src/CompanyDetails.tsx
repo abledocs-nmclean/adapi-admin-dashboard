@@ -1,15 +1,18 @@
-import { HtmlHTMLAttributes, useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
 import { useAuthContext, useQueryWithAuth } from "./auth-context";
 import { getCompany, getUsersByCompany } from "./api";
-import { Company } from './model';
+import { Company, User } from './model';
 import { useSpinnerEffect } from "./util";
 import './CompanyDetails.css';
 
 type CompanyRouteParams = {id: string};
+
+// add isAdmin to the User type returned from the API
+type UserWithAdmin = User & { isAdmin: boolean };
 
 export default function CompanyDetails() {
     const { id } = useParams<CompanyRouteParams>();
@@ -34,6 +37,22 @@ export default function CompanyDetails() {
         }
     ));
 
+    const users: User[] | UserWithAdmin[] | undefined = useMemo(() => {
+        if (usersQuery.isSuccess) {
+            if (companyQuery.isSuccess) {
+                // when the company data is available, use "adminUserIds" to populate each user's "isAdmin"
+                return usersQuery.data.map((userData) => {
+                    return {
+                        ...userData,
+                        isAdmin: companyQuery.data.adminUserIds.includes(userData.id)
+                    };
+                });
+            }
+            // when only user data is available, use the original data
+            return usersQuery.data;
+        }
+    }, [companyQuery.isSuccess, usersQuery.isSuccess]);
+
     const usersContainerRef = useRef<HTMLElement | null>(null);
 
     useSpinnerEffect(usersContainerRef, usersQuery.isLoading);
@@ -52,19 +71,19 @@ export default function CompanyDetails() {
             {companyQuery.isSuccess &&
                 <dl>
                     <dt>ID</dt>
-                    <dd>{companyQuery.data?.id}</dd>
+                    <dd>{companyQuery.data.id}</dd>
 
                     <dt>Name</dt>
-                    <dd>{companyQuery.data?.name}</dd>
+                    <dd>{companyQuery.data.name}</dd>
 
                     <dt>Trial</dt>
-                    <dd>{companyQuery.data?.isTrial ? "yes" : "no"}</dd>
+                    <dd>{companyQuery.data.isTrial ? "yes" : "no"}</dd>
 
                     <dt>Active</dt>
-                    <dd>{companyQuery.data?.isActive ? "yes" : "no"}</dd>
+                    <dd>{companyQuery.data.isActive ? "yes" : "no"}</dd>
 
                     <dt>ADO Client ID</dt>
-                    <dd>{companyQuery.data?.adoClientId}</dd>
+                    <dd>{companyQuery.data.adoClientId}</dd>
                 </dl>
             }
 
@@ -73,12 +92,13 @@ export default function CompanyDetails() {
                 usersContainerRef.current = div;
                 if (div) createSpinner({target: div});
             }}>
-                <GridComponent dataSource={usersQuery.data} allowSorting={true}>
+                <GridComponent dataSource={users} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Username" field="username" />
                         <ColumnDirective headerText="Email" field="email" />
                         <ColumnDirective headerText="Trial" width={100} field="isTrial" />
                         <ColumnDirective headerText="Active" width={100} field="isActive" />
+                        <ColumnDirective headerText="Admin" width={100} field="isAdmin" />
                         <ColumnDirective field="id" />
                     </ColumnsDirective>
                     <Inject services={[Sort]} />
