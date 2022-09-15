@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
-import { QueryObserverBaseResult } from '@tanstack/react-query';
 import { AuthenticatedUser, retrieveUser, storeUser, clearUserStorage } from './user';
-import { ApiError, authorize } from './api';
+import { authorize } from './api';
 
 type AuthContextModel = {
     user: AuthenticatedUser | null,
@@ -43,15 +42,4 @@ export function AuthProvider({children}: React.PropsWithChildren) {
 
 export function useAuthContext() {
     return useContext(AuthContext)!;
-}
-
-// wrap a query that uses authorization, to trigger a logout when an Unauthorized response is returned
-export function useQueryWithAuth<TQuery extends QueryObserverBaseResult>(query: TQuery) {
-    const context = useAuthContext();
-
-    if (query.isError && query.error instanceof ApiError && query.error.status == 401) {
-        context.logout();
-    }
-
-    return query;
 }
