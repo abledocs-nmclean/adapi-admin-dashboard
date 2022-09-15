@@ -6,7 +6,7 @@ import { ApiError } from './api';
 import { Company, User } from "./model";
 
 // wrap a query that uses authorization, to trigger a logout when an Unauthorized response is returned
-export function useQueryWithAuth<TQuery extends QueryObserverBaseResult>(query: TQuery) {
+export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query: TQuery) {
     const context = useAuthContext();
 
     if (query.isError && query.error instanceof ApiError && query.error.status == 401) {
@@ -19,7 +19,7 @@ export function useQueryWithAuth<TQuery extends QueryObserverBaseResult>(query: 
 export function useCompaniesQuery() {
     const { user } = useAuthContext();
 
-    return useQueryWithAuth(useQuery(
+    return useQueryWithLogout(useQuery(
         ["companies", user],
         () => getAllCompanies(user!),
         {
@@ -32,7 +32,7 @@ export function useCompaniesQuery() {
 export function useCompanyQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
-    return useQueryWithAuth(useQuery(
+    return useQueryWithLogout(useQuery(
         ["company", user, id],
         () => getCompany(user!, id!),
         {
@@ -45,7 +45,7 @@ export function useCompanyQuery(id: string | undefined) {
 export function useUsersQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
-    return useQueryWithAuth(useQuery(
+    return useQueryWithLogout(useQuery(
         ["users", user, id],
         () => getUsersByCompany(user!, id!),
         {

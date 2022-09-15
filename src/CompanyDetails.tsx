@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { createSpinner } from '@syncfusion/ej2-popups';
-import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
+import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
+import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
-import { Company, User } from './model';
+import { Company, DocumentTemplate, User } from './model';
 import { useSpinnerEffect } from "./util";
 import './CompanyDetails.css';
 
@@ -37,16 +38,16 @@ export default function CompanyDetails() {
                     <dd>{companyQuery.data.name}</dd>
 
                     <dt>Trial</dt>
-                    <dd>{companyQuery.data.isTrial ? "yes" : "no"}</dd>
+                    <dd><CheckBoxComponent checked={companyQuery.data.isTrial} disabled={true} /></dd>
 
                     <dt>Active</dt>
-                    <dd>{companyQuery.data.isActive ? "yes" : "no"}</dd>
+                    <dd><CheckBoxComponent checked={companyQuery.data.isActive} disabled={true} /></dd>
 
                     <dt>ADO Client ID</dt>
                     <dd>{companyQuery.data.adoClientId}</dd>
                 </dl>
             }
-
+            
             <h2>Users</h2>
             <div ref={(div) => {
                 usersContainerRef.current = div;
@@ -56,12 +57,12 @@ export default function CompanyDetails() {
                     <ColumnsDirective>
                         <ColumnDirective headerText="Username" field="username" />
                         <ColumnDirective headerText="Email" field="email" />
-                        <ColumnDirective headerText="Trial" width={100} field="isTrial" />
-                        <ColumnDirective headerText="Active" width={100} field="isActive" />
-                        <ColumnDirective headerText="Admin" width={100} field="isAdmin" />
-                        <ColumnDirective field="id" />
+                        <ColumnDirective headerText="Trial" autoFit={true} field="isTrial" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Active" autoFit={true} field="isActive" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Admin" autoFit={true} field="isAdmin" displayAsCheckBox={true} />
+                        {/* <ColumnDirective field="id" /> */}
                     </ColumnsDirective>
-                    <Inject services={[Sort]} />
+                    <Inject services={[Sort, Resize]} />
                 </GridComponent>
             </div>
 
@@ -72,11 +73,14 @@ export default function CompanyDetails() {
             }}>
                 <GridComponent dataSource={companyQuery.data?.templates} allowSorting={true}>
                     <ColumnsDirective>
-                        <ColumnDirective headerText="Template Name" field="name" />
+                        <ColumnDirective headerText="Policy Name" field="name" />
                         <ColumnDirective headerText="Match" field="match" />
-                        <ColumnDirective field="commonFileId" />
+                        <ColumnDirective headerText="Language" autoFit={true} field="lang" />
+                        <ColumnDirective headerText="Template Name" />
+                        <ColumnDirective headerText="Type" />
+                        {/* <ColumnDirective field="commonFileId" /> */}
                     </ColumnsDirective>
-                    <Inject services={[Sort]} />
+                    <Inject services={[Sort, Resize]} />
                 </GridComponent>
             </div>
 
