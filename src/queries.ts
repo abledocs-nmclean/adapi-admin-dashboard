@@ -9,7 +9,7 @@ import { Company, User } from "./model";
 export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query: TQuery) {
     const context = useAuthContext();
 
-    if (query.isError && query.error instanceof ApiError && query.error.status == 401) {
+    if (query.isError && query.error instanceof ApiError && query.error.status === 401) {
         context.logout();
     }
 
@@ -76,5 +76,5 @@ export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin
             // when only user data is available, use the original data
             return usersQuery.data;
         }
-    }, [companyQuery.isSuccess, usersQuery.isSuccess]);
+    }, [companyQuery.isSuccess, companyQuery.data?.adminUserIds, usersQuery.isSuccess, usersQuery.data]);
 }

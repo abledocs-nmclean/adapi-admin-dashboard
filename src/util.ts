@@ -9,5 +9,5 @@ export function useSpinnerEffect(containerRef: MutableRefObject<HTMLElement | nu
         } else {
             hideSpinner(containerRef.current);
         }
-    }, [shouldShowSpinner])
+    }, [containerRef, shouldShowSpinner])
 }

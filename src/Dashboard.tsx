@@ -18,7 +18,7 @@ export default function Dashboard() {
         if (user === null) {
             navigate("/login");
         }
-    }, [user]);
+    }, [user, navigate]);
 
     if (user === null) {
         return <></>;
