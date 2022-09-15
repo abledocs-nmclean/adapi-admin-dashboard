@@ -21,8 +21,8 @@ export default function CompanyList() {
                 <GridComponent dataSource={companiesQuery.data} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Name" field="name" />
-                        <ColumnDirective headerText="Active" autoFit={true} field="isActive" displayAsCheckBox={true} />
-                        <ColumnDirective headerText="Trial" autoFit={true} field="isTrial" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Active" textAlign={"Center"} autoFit={true} field="isActive" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Trial" textAlign={"Center"} autoFit={true} field="isTrial" displayAsCheckBox={true} />
                         <ColumnDirective field="id" />
                     </ColumnsDirective>
                     <Inject services={[Sort, Resize]} />

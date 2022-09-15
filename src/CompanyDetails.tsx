@@ -57,9 +57,9 @@ export default function CompanyDetails() {
                     <ColumnsDirective>
                         <ColumnDirective headerText="Username" field="username" />
                         <ColumnDirective headerText="Email" field="email" />
-                        <ColumnDirective headerText="Trial" autoFit={true} field="isTrial" displayAsCheckBox={true} />
-                        <ColumnDirective headerText="Active" autoFit={true} field="isActive" displayAsCheckBox={true} />
-                        <ColumnDirective headerText="Admin" autoFit={true} field="isAdmin" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Trial" autoFit={true} textAlign={"Center"} field="isTrial" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Active" autoFit={true} textAlign={"Center"} field="isActive" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Admin" autoFit={true} textAlign={"Center"} field="isAdmin" displayAsCheckBox={true} />
                         {/* <ColumnDirective field="id" /> */}
                     </ColumnsDirective>
                     <Inject services={[Sort, Resize]} />
@@ -75,7 +75,7 @@ export default function CompanyDetails() {
                     <ColumnsDirective>
                         <ColumnDirective headerText="Policy Name" field="name" />
                         <ColumnDirective headerText="Match" field="match" />
-                        <ColumnDirective headerText="Language" autoFit={true} field="lang" />
+                        <ColumnDirective headerText="Language" textAlign={"Center"} autoFit={true} field="lang" />
                         <ColumnDirective headerText="Template Name" />
                         <ColumnDirective headerText="Type" />
                         {/* <ColumnDirective field="commonFileId" /> */}
