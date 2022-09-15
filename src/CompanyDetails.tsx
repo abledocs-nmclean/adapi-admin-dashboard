@@ -1,68 +1,31 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
+import { createSpinner } from '@syncfusion/ej2-popups';
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
-import { useAuthContext, useQueryWithAuth } from "./auth-context";
-import { getCompany, getUsersByCompany } from "./api";
+import { useAuthContext } from "./auth-context";
+import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
 import { Company, User } from './model';
 import { useSpinnerEffect } from "./util";
 import './CompanyDetails.css';
 
 type CompanyRouteParams = {id: string};
 
-// add isAdmin to the User type returned from the API
-type UserWithAdmin = User & { isAdmin: boolean };
-
 export default function CompanyDetails() {
     const { id } = useParams<CompanyRouteParams>();
     
     const { user } = useAuthContext();
 
-    const companyQuery = useQueryWithAuth(useQuery(
-        ["company", id],
-        () => getCompany(user!, id!),
-        {
-            enabled: user !== null && id !== undefined,
-            retry: false
-        }
-    ));
-
-    const usersQuery = useQueryWithAuth(useQuery(
-        ["users", id],
-        () => getUsersByCompany(user!, id!),
-        {
-            enabled: user !== null && id !== undefined,
-            retry: false
-        }
-    ));
-
-    const users: User[] | UserWithAdmin[] | undefined = useMemo(() => {
-        if (usersQuery.isSuccess) {
-            if (companyQuery.isSuccess) {
-                // when the company data is available, use "adminUserIds" to populate each user's "isAdmin"
-                return usersQuery.data.map((userData) => {
-                    return {
-                        ...userData,
-                        isAdmin: companyQuery.data.adminUserIds.includes(userData.id)
-                    };
-                });
-            }
-            // when only user data is available, use the original data
-            return usersQuery.data;
-        }
-    }, [companyQuery.isSuccess, usersQuery.isSuccess]);
+    const companyQuery = useCompanyQuery(user, id);    
+    const usersQuery = useUsersQuery(user, id);
+    const users = useComputedUsers(companyQuery, usersQuery);
 
     const usersContainerRef = useRef<HTMLElement | null>(null);
-
     useSpinnerEffect(usersContainerRef, usersQuery.isLoading);
 
     const templatesContainerRef = useRef<HTMLElement | null>(null);
-
     useSpinnerEffect(templatesContainerRef, companyQuery.isLoading);
 
     const filesContainerRef = useRef<HTMLElement | null>(null);
-
     useSpinnerEffect(filesContainerRef, false);
 
     return (
