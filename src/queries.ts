@@ -1,17 +1,19 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useQuery, QueryObserverBaseResult } from "@tanstack/react-query";
 import { getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
 import { Company, User } from "./model";
 
-// wrap a query that uses authorization, to trigger a logout when an Unauthorized response is returned
+// wrap a query that uses authorization, to trigger a logout when authorization has expired
 export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query: TQuery) {
     const context = useAuthContext();
 
-    if (query.isError && query.error instanceof ApiError && query.error.status === 401) {
-        context.logout();
-    }
+    useEffect(() => {
+        if (query.isError && query.error instanceof ApiError && query.error.status === 401) {
+            context.logout();
+        }
+    }, [context, query.isError, query.error]);    
 
     return query;
 }
