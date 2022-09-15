@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { createSpinner } from '@syncfusion/ej2-popups';
-import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
+import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
 import { Company } from './model';
 import { useSpinnerEffect } from "./util";
@@ -21,11 +21,11 @@ export default function CompanyList() {
                 <GridComponent dataSource={companiesQuery.data} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Name" field="name" />
-                        <ColumnDirective headerText="Active" width={100} field="isActive" />
-                        <ColumnDirective headerText="Trial" width={100} field="isTrial"  />
+                        <ColumnDirective headerText="Active" autoFit={true} field="isActive" displayAsCheckBox={true} />
+                        <ColumnDirective headerText="Trial" autoFit={true} field="isTrial" displayAsCheckBox={true} />
                         <ColumnDirective field="id" />
                     </ColumnsDirective>
-                    <Inject services={[Sort]} />
+                    <Inject services={[Sort, Resize]} />
                 </GridComponent>
             </div>
         </div>
