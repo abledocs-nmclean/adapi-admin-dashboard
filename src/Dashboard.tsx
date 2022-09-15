@@ -25,7 +25,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div>
+        <div className="dashboard">
             User "{user.username}" logged in.
             <Routes>
                 <Route index element={<CompanyList />} />
