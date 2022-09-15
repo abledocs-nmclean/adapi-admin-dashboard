@@ -1,16 +1,12 @@
 import { useState, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { createSpinner } from '@syncfusion/ej2-popups';
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
-import { useAuthContext } from './auth-context';
 import { useCompaniesQuery } from "./queries";
 import { Company } from './model';
 import { useSpinnerEffect } from "./util";
 
 export default function CompanyList() {
-    const { user } = useAuthContext();
-
-    const companiesQuery = useCompaniesQuery(user);
+    const companiesQuery = useCompaniesQuery();
 
     const companiesContainerRef = useRef<HTMLElement | null>(null);
     useSpinnerEffect(companiesContainerRef, companiesQuery.isLoading);

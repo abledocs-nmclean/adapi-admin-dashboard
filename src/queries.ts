@@ -2,10 +2,13 @@ import { useMemo } from "react";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useQueryWithAuth } from './auth-context';
 import { getAllCompanies, getCompany, getUsersByCompany } from "./api";
+import { useAuthContext } from "./auth-context";
 import { AuthenticatedUser } from "./user";
 import { Company, User } from "./model";
 
-export function useCompaniesQuery(user: AuthenticatedUser | null) {
+export function useCompaniesQuery() {
+    const { user } = useAuthContext();
+
     return useQueryWithAuth(useQuery(
         ["companies", user],
         () => getAllCompanies(user!),
@@ -16,7 +19,9 @@ export function useCompaniesQuery(user: AuthenticatedUser | null) {
     ));
 }
 
-export function useCompanyQuery(user: AuthenticatedUser | null, id: string | undefined) {
+export function useCompanyQuery(id: string | undefined) {
+    const { user } = useAuthContext();
+
     return useQueryWithAuth(useQuery(
         ["company", user, id],
         () => getCompany(user!, id!),
@@ -27,7 +32,9 @@ export function useCompanyQuery(user: AuthenticatedUser | null, id: string | und
     ));
 }
 
-export function useUsersQuery(user: AuthenticatedUser | null, id: string | undefined) {
+export function useUsersQuery(id: string | undefined) {
+    const { user } = useAuthContext();
+
     return useQueryWithAuth(useQuery(
         ["users", user, id],
         () => getUsersByCompany(user!, id!),
@@ -41,7 +48,10 @@ export function useUsersQuery(user: AuthenticatedUser | null, id: string | undef
 // add isAdmin to the User type returned from the API
 type UserWithAdmin = User & { isAdmin: boolean };
 
-export function useComputedUsers(companyQuery: UseQueryResult<Company>, usersQuery: UseQueryResult<User[]>): User[] | UserWithAdmin[] | undefined {
+export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin[] | undefined {
+    const companyQuery = useCompanyQuery(id);    
+    const usersQuery = useUsersQuery(id);
+
     return useMemo(() => {
         if (usersQuery.isSuccess) {
             if (companyQuery.isSuccess) {

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { createSpinner } from '@syncfusion/ej2-popups';
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort } from '@syncfusion/ej2-react-grids';
-import { useAuthContext } from "./auth-context";
 import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
 import { Company, User } from './model';
 import { useSpinnerEffect } from "./util";
@@ -12,12 +11,10 @@ type CompanyRouteParams = {id: string};
 
 export default function CompanyDetails() {
     const { id } = useParams<CompanyRouteParams>();
-    
-    const { user } = useAuthContext();
 
-    const companyQuery = useCompanyQuery(user, id);    
-    const usersQuery = useUsersQuery(user, id);
-    const users = useComputedUsers(companyQuery, usersQuery);
+    const companyQuery = useCompanyQuery(id);    
+    const usersQuery = useUsersQuery(id);
+    const users = useComputedUsers(id);
 
     const usersContainerRef = useRef<HTMLElement | null>(null);
     useSpinnerEffect(usersContainerRef, usersQuery.isLoading);
@@ -26,7 +23,7 @@ export default function CompanyDetails() {
     useSpinnerEffect(templatesContainerRef, companyQuery.isLoading);
 
     const filesContainerRef = useRef<HTMLElement | null>(null);
-    useSpinnerEffect(filesContainerRef, false);
+    useSpinnerEffect(filesContainerRef, false/* todo: files query */);
 
     return (
         <div>
