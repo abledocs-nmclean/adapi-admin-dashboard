@@ -31,10 +31,7 @@ export async function authorize(request: AuthorizeRequest) {
     return jwt;
 }
 
-function getAuthHeader(user: AuthenticatedUser): {Authorization?: string} {
-    if (user === null) {
-        return {};
-    }
+function getAuthHeader(user: AuthenticatedUser): {Authorization: string} {
     return {Authorization: `Bearer ${user.jwt}`};
 }
 
