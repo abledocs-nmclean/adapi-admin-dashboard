@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { useAuthContext } from './auth-context';
 import CompanyList from './CompanyList';

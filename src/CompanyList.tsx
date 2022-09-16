@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { GridComponent, ColumnDirective, ColumnsDirective, CommandColumn, Inject, Sort, Resize, CommandClickEventArgs, CommandModel } from '@syncfusion/ej2-react-grids';
+import { GridComponent, ColumnDirective, ColumnsDirective, CommandColumn, Inject, Sort, Resize, CommandClickEventArgs } from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
 import { Company } from './model';
 import { useSpinnerCallback } from "./util";
@@ -13,7 +12,7 @@ export default function CompanyList() {
     const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
 
     function handleGridCommand(e: CommandClickEventArgs) {
-        if (e.commandColumn?.title == "LOAD") {
+        if (e.commandColumn?.title === "LOAD") {
             const company = e.rowData as Company;
             navigate(`company/${company.id}`);
         }

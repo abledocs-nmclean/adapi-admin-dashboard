@@ -3,7 +3,7 @@ import { useQuery, QueryObserverBaseResult } from "@tanstack/react-query";
 import { getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
-import { Company, User } from "./model";
+import { User } from "./model";
 
 // wrap a query that uses authorization, to trigger a logout when authorization has expired
 export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query: TQuery) {

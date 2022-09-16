@@ -1,9 +1,7 @@
-import { useEffect } from "react";
 import { useParams } from "react-router";
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
-import { Company, DocumentTemplate, User } from './model';
 import { useSpinnerCallback } from "./util";
 import './CompanyDetails.css';
 
@@ -17,9 +15,7 @@ export default function CompanyDetails() {
     const users = useComputedUsers(id);
 
     const usersSpinnerCallback = useSpinnerCallback(usersQuery.isLoading);
-
     const templatesSpinnerCallback = useSpinnerCallback(companyQuery.isLoading);
-
     const filesSpinnerCallback = useSpinnerCallback(false/*todo: files query */);
 
     return (
@@ -76,7 +72,6 @@ export default function CompanyDetails() {
 
             <h2>Template files</h2>
             <div ref={filesSpinnerCallback}>
-
             </div>
         </div>
     );
