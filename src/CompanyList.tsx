@@ -28,7 +28,7 @@ export default function CompanyList() {
                         <ColumnDirective headerText="Active" textAlign={"Center"} autoFit={true} field="isActive" displayAsCheckBox={true} />
                         <ColumnDirective headerText="Trial" textAlign={"Center"} autoFit={true} field="isTrial" displayAsCheckBox={true} />
                         {/* <ColumnDirective field="id" /> */}
-                        <ColumnDirective autoFit={true} commands={[{
+                        <ColumnDirective /* autoFit={true} not working? */ width={110} commands={[{
                             title: "LOAD",
                             buttonOption: { content: "Load" }
                         }]} />
