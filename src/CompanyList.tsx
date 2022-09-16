@@ -1,18 +1,16 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { createSpinner } from '@syncfusion/ej2-popups';
 import { GridComponent, ColumnDirective, ColumnsDirective, CommandColumn, Inject, Sort, Resize, CommandClickEventArgs, CommandModel } from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
 import { Company } from './model';
-import { useSpinnerEffect } from "./util";
+import { useSpinnerCallback } from "./util";
 
 export default function CompanyList() {
     const navigate = useNavigate();
 
     const companiesQuery = useCompaniesQuery();
 
-    const companiesContainerRef = useRef<HTMLElement | null>(null);
-    useSpinnerEffect(companiesContainerRef, companiesQuery.isLoading);
+    const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
 
     function handleGridCommand(e: CommandClickEventArgs) {
         if (e.commandColumn?.title == "LOAD") {
@@ -24,10 +22,7 @@ export default function CompanyList() {
     return (
         <div>
             <h1>Companies</h1>
-            <div ref={(div) => {
-                companiesContainerRef.current = div;
-                if (div) createSpinner({target: div});
-            }}>
+            <div ref={companiesSpinnerCallback}>
                 <GridComponent dataSource={companiesQuery.data} commandClick={handleGridCommand} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Name" field="name" />

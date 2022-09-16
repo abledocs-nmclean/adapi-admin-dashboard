@@ -1,13 +1,26 @@
-import { useEffect, MutableRefObject } from "react";
-import { showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
+import { useCallback, useRef } from "react";
+import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
 
-export function useSpinnerEffect(containerRef: MutableRefObject<HTMLElement | null>, shouldShowSpinner: boolean) {
-    useEffect(() => {
-        if (!containerRef.current) return;
-        if (shouldShowSpinner) {
-            showSpinner(containerRef.current);
-        } else {
-            hideSpinner(containerRef.current);
+export function useSpinnerCallback(shouldShowSpinner: boolean) {
+    const containerRef = useRef<HTMLElement | null>(null);
+
+    return useCallback((container: HTMLElement | null) => {
+        if (!container) {
+            // container not mounted
+            return;
         }
-    }, [containerRef, shouldShowSpinner])
+
+        if (container !== containerRef.current) {
+            // new container mounted - set up spinner
+            createSpinner({target: container});
+            containerRef.current = container;
+        }
+
+        if (shouldShowSpinner) {
+            // for some reason, we can't seem to create a spinner and show it immediately. Use setTimeout to start showing on the next frame
+            setTimeout(() => showSpinner(container));
+        } else {
+            hideSpinner(container);
+        }
+    }, [shouldShowSpinner]);
 }

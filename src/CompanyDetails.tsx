@@ -1,11 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router";
-import { createSpinner } from '@syncfusion/ej2-popups';
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
 import { Company, DocumentTemplate, User } from './model';
-import { useSpinnerEffect } from "./util";
+import { useSpinnerCallback } from "./util";
 import './CompanyDetails.css';
 
 type CompanyRouteParams = {id: string};
@@ -17,14 +16,11 @@ export default function CompanyDetails() {
     const usersQuery = useUsersQuery(id);
     const users = useComputedUsers(id);
 
-    const usersContainerRef = useRef<HTMLElement | null>(null);
-    useSpinnerEffect(usersContainerRef, usersQuery.isLoading);
+    const usersSpinnerCallback = useSpinnerCallback(usersQuery.isLoading);
 
-    const templatesContainerRef = useRef<HTMLElement | null>(null);
-    useSpinnerEffect(templatesContainerRef, companyQuery.isLoading);
+    const templatesSpinnerCallback = useSpinnerCallback(companyQuery.isLoading);
 
-    const filesContainerRef = useRef<HTMLElement | null>(null);
-    useSpinnerEffect(filesContainerRef, false/* todo: files query */);
+    const filesSpinnerCallback = useSpinnerCallback(false/*todo: files query */);
 
     return (
         <div>
@@ -49,10 +45,7 @@ export default function CompanyDetails() {
             }
             
             <h2>Users</h2>
-            <div ref={(div) => {
-                usersContainerRef.current = div;
-                if (div) createSpinner({target: div});
-            }}>
+            <div ref={usersSpinnerCallback}>
                 <GridComponent dataSource={users} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Username" field="username" />
@@ -67,10 +60,7 @@ export default function CompanyDetails() {
             </div>
 
             <h2>Template policy</h2>
-            <div ref={(div) => {
-                templatesContainerRef.current = div;
-                if (div) createSpinner({target: div});
-            }}>
+            <div ref={templatesSpinnerCallback}>
                 <GridComponent dataSource={companyQuery.data?.templates} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Policy Name" field="name" />
@@ -85,10 +75,7 @@ export default function CompanyDetails() {
             </div>
 
             <h2>Template files</h2>
-            <div ref={(div) => {
-                filesContainerRef.current = div;
-                if (div) createSpinner({target: div});
-            }}>
+            <div ref={templatesSpinnerCallback}>
 
             </div>
         </div>
