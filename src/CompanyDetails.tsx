@@ -75,7 +75,7 @@ export default function CompanyDetails() {
             </div>
 
             <h2>Template files</h2>
-            <div ref={templatesSpinnerCallback}>
+            <div ref={filesSpinnerCallback}>
 
             </div>
         </div>
