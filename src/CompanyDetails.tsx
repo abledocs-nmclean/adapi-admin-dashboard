@@ -10,7 +10,7 @@ type CompanyRouteParams = {id: string};
 export default function CompanyDetails() {
     const { id } = useParams<CompanyRouteParams>();
 
-    const companyQuery = useCompanyQuery(id);    
+    const companyQuery = useCompanyQuery(id);
     const usersQuery = useUsersQuery(id);
     const users = useComputedUsers(id);
 
