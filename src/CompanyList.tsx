@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { GridComponent, ColumnDirective, ColumnsDirective,
     CommandColumn, CommandModel, CommandClickEventArgs,
     Inject, Sort, Resize} from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
 import { Company } from './model';
-import { getErrorDisplayMessage, useSpinnerCallback } from "./util";
+import { useErrorMessage, useSpinnerCallback } from "./util";
 
 // add id property to commands for reliable comparison
 type CommandWithId = CommandModel & {id: string};
@@ -13,24 +13,11 @@ type CommandWithId = CommandModel & {id: string};
 export default function CompanyList() {
     const navigate = useNavigate();
 
-    const [companiesQueryErrorMessage, setCompaniesQueryErrorMessage] = useState<string | null>(null);
-
     const companiesQuery = useCompaniesQuery();
 
     const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
 
-    useEffect(() => {
-        updateErrorMessage();
-
-        async function updateErrorMessage() {
-            if (companiesQuery.error) {
-                const message = await getErrorDisplayMessage(companiesQuery.error);
-                setCompaniesQueryErrorMessage(message);
-            } else {
-                setCompaniesQueryErrorMessage(null);
-            }
-        }
-    }, [companiesQuery.error]);
+    const companiesQueryErrorMessage = useErrorMessage(companiesQuery.error);
    
     const commands: CommandWithId[] = useMemo(() => ([
         {

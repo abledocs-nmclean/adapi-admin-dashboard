@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
 import { ApiError } from "./api";
 
@@ -28,7 +28,7 @@ export function useSpinnerCallback(shouldShowSpinner: boolean) {
 
 const htmlParser = new DOMParser();
 
-export async function getErrorDisplayMessage(error: any) {
+export async function getErrorDisplayMessage(error: unknown) {
     if (error instanceof ApiError) {
         const responseText = await error.response.text();
 
@@ -46,4 +46,23 @@ export async function getErrorDisplayMessage(error: any) {
     }
 
     return "unknown error";
+}
+
+export function useErrorMessage(error: unknown) {
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        updateErrorMessage();
+
+        async function updateErrorMessage() {
+            if (error) {
+                const message = await getErrorDisplayMessage(error);
+                setErrorMessage(message);
+            } else {
+                setErrorMessage(null);
+            }
+        }            
+    }, [error]);
+
+    return errorMessage;
 }
