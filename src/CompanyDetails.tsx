@@ -19,7 +19,7 @@ export default function CompanyDetails() {
     const filesSpinnerCallback = useSpinnerCallback(false/*todo: files query */);
 
     return (
-        <div>
+        <div className="company-details">
             <h1>Company Details</h1>
             {companyQuery.isSuccess &&
                 <dl>

@@ -1,10 +1,10 @@
-dt {
+.company-details dt {
     float: left;
     clear: left;
     min-width: 150px;
     font-weight: bold;
 }
 
-dd {
+.company-details dd {
     padding-bottom: 1em;
 }
