@@ -17,6 +17,10 @@
 }
 
 .login-page .error {
+    background-color: #FF4444;
+    color: white;
+    margin-top: 2em;
+    padding: 5px;
     white-space: pre-wrap;
 }
 
