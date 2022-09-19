@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { GridComponent, ColumnDirective, ColumnsDirective, CommandColumn, Inject, Sort, Resize, CommandClickEventArgs } from '@syncfusion/ej2-react-grids';
+import { GridComponent, ColumnDirective, ColumnsDirective,
+    CommandColumn, CommandModel, CommandClickEventArgs,
+    Inject, Sort, Resize} from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
 import { Company } from './model';
 import { getErrorDisplayMessage, useSpinnerCallback } from "./util";
+
+// add id property to commands for reliable comparison
+type CommandWithId = CommandModel & {id: string};
 
 export default function CompanyList() {
     const navigate = useNavigate();
@@ -26,11 +31,21 @@ export default function CompanyList() {
             }
         }
     }, [companiesQuery.error]);
+   
+    const commands: CommandWithId[] = useMemo(() => ([
+        {
+            id: "LOAD",
+            buttonOption: { content: "Load" },
+        }
+    ]), []);
 
     function handleGridCommand(e: CommandClickEventArgs) {
-        if (e.commandColumn?.title === "LOAD") {
-            const company = e.rowData as Company;
-            navigate(`company/${company.id}`);
+        const command = e.commandColumn as CommandWithId | undefined;
+        switch (command?.id) {
+            case "LOAD":
+                const company = e.rowData as Company;
+                navigate(`company/${company.id}`);
+                break;
         }
     }
 
@@ -49,10 +64,7 @@ export default function CompanyList() {
                         <ColumnDirective headerText="Active" textAlign={"Center"} autoFit={true} field="isActive" displayAsCheckBox={true} />
                         <ColumnDirective headerText="Trial" textAlign={"Center"} autoFit={true} field="isTrial" displayAsCheckBox={true} />
                         {/* <ColumnDirective field="id" /> */}
-                        <ColumnDirective /* autoFit={true} not working? */ width={110} commands={[{
-                            title: "LOAD",
-                            buttonOption: { content: "Load" }
-                        }]} />
+                        <ColumnDirective /* autoFit={true} not working? */ width={110} commands={commands} />
                     </ColumnsDirective>
                     <Inject services={[Sort, Resize, CommandColumn]} />
                 </GridComponent>
