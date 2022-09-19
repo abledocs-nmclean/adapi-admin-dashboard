@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useMemo } from 'react';
 import { AuthenticatedUser, retrieveUser, storeUser, clearUserStorage } from './user';
-import { authorize } from './api';
+import { ApiError, authorize } from './api';
 
 type AuthContextModel = {
     user: AuthenticatedUser | null,
@@ -9,7 +9,7 @@ type AuthContextModel = {
     logoutReason?: LogoutReason
 };
 
-type LogoutReason = "AuthenticationFailed" | "TokenExpired"
+type LogoutReason = "AuthenticationFailed" | "TokenExpired" | "Error";
 
 const AuthContext = createContext<AuthContextModel | null>(null);
 
@@ -24,11 +24,9 @@ export function AuthProvider({children}: React.PropsWithChildren) {
         let jwt: string | undefined;
         try {
             jwt = await authorize({username, password});
-        } catch (err) {
-            if (user !== null) {
-                logout("AuthenticationFailed");
-            }
-            throw err;
+        } catch (error) {
+            logout(error instanceof ApiError && error.response.status === 401 ? "AuthenticationFailed" : "Error");
+            throw error;
         }
         const newUser: AuthenticatedUser = {username, jwt};
         storeUser(newUser);
