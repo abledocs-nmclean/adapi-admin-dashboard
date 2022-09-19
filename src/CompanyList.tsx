@@ -1,15 +1,31 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { GridComponent, ColumnDirective, ColumnsDirective, CommandColumn, Inject, Sort, Resize, CommandClickEventArgs } from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
 import { Company } from './model';
-import { useSpinnerCallback } from "./util";
+import { getErrorDisplayMessage, useSpinnerCallback } from "./util";
 
 export default function CompanyList() {
     const navigate = useNavigate();
 
+    const [companiesQueryErrorMessage, setCompaniesQueryErrorMessage] = useState<string | null>(null);
+
     const companiesQuery = useCompaniesQuery();
 
     const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
+
+    useEffect(() => {
+        updateErrorMessage();
+
+        async function updateErrorMessage() {
+            if (companiesQuery.error) {
+                const message = await getErrorDisplayMessage(companiesQuery.error);
+                setCompaniesQueryErrorMessage(message);
+            } else {
+                setCompaniesQueryErrorMessage(null);
+            }
+        }
+    }, [companiesQuery.error]);
 
     function handleGridCommand(e: CommandClickEventArgs) {
         if (e.commandColumn?.title === "LOAD") {
@@ -22,6 +38,11 @@ export default function CompanyList() {
         <div>
             <h1>Companies</h1>
             <div ref={companiesSpinnerCallback}>
+                {companiesQueryErrorMessage &&
+                    <div className="data-error" role="alert">
+                        Problem loading company list:<br />
+                        {companiesQueryErrorMessage}
+                    </div>}
                 <GridComponent dataSource={companiesQuery.data} commandClick={handleGridCommand} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Name" field="name" />

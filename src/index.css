@@ -5,7 +5,7 @@
 /* @import '../node_modules/@syncfusion/ej2-inputs/styles/material.css'; */
 @import "../node_modules/@syncfusion/ej2-react-inputs/styles/material.css";
 /* @import '../node_modules/@syncfusion/ej2-navigations/styles/material.css'; */
-/* @import '../node_modules/@syncfusion/ej2-popups/styles/material.css'; */
+@import '../node_modules/@syncfusion/ej2-popups/styles/material.css';
 /* @import '../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css'; */
 @import "../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
 
@@ -21,4 +21,11 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.data-error {
+  white-space: pre-wrap;
+  color: #FF2222;
+  padding: 5px;
+  white-space: pre-wrap;
 }
