@@ -1,5 +1,6 @@
 import { useCallback, useRef } from "react";
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
+import { ApiError } from "./api";
 
 export function useSpinnerCallback(shouldShowSpinner: boolean) {
     const containerRef = useRef<HTMLElement | null>(null);
@@ -23,4 +24,16 @@ export function useSpinnerCallback(shouldShowSpinner: boolean) {
             hideSpinner(container);
         }
     }, [shouldShowSpinner]);
+}
+
+export function getErrorDisplayMessage(error: any) {
+    if (error instanceof ApiError) {
+        // todo - get message from response
+    }
+
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    return "unknown error";
 }
