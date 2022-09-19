@@ -58,7 +58,10 @@ export default function Login() {
                     value={password} input={({value}) => setPassword(value)} />
                 <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>
                 {errorMessage &&
-                    <div className="error" role="alert">Couldn't log in: {errorMessage}</div>
+                    <div className="error" role="alert">
+                        Couldn't log in:<br />
+                        {errorMessage}
+                    </div>
                 }
             </form>
         </div>
