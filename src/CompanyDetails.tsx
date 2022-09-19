@@ -2,7 +2,7 @@ import { useParams } from "react-router";
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
-import { useSpinnerCallback } from "./util";
+import { useErrorMessage, useSpinnerCallback } from "./util";
 import './CompanyDetails.css';
 
 type CompanyRouteParams = {id: string};
@@ -18,9 +18,18 @@ export default function CompanyDetails() {
     const templatesSpinnerCallback = useSpinnerCallback(companyQuery.isLoading);
     const filesSpinnerCallback = useSpinnerCallback(false/*todo: files query */);
 
+    const companyQueryErrorMessage = useErrorMessage(companyQuery.error);
+    const usersQueryErrorMessage =  useErrorMessage(usersQuery.error);
+
     return (
         <div className="company-details">
             <h1>Company Details</h1>
+            {companyQueryErrorMessage &&
+                <div className="data-error" role="alert">
+                    Problem loading company details:<br />
+                    {companyQueryErrorMessage}
+                </div>
+            }
             {companyQuery.isSuccess &&
                 <dl>
                     <dt>ID</dt>
@@ -42,6 +51,12 @@ export default function CompanyDetails() {
             
             <h2>Users</h2>
             <div ref={usersSpinnerCallback}>
+                {usersQueryErrorMessage &&
+                    <div className="data-error" role="alert">
+                        Problem loading user list:<br />
+                        {usersQueryErrorMessage}
+                    </div>
+                }
                 <GridComponent dataSource={users} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Username" field="username" />

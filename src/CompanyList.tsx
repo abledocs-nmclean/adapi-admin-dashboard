@@ -44,7 +44,8 @@ export default function CompanyList() {
                     <div className="data-error" role="alert">
                         Problem loading company list:<br />
                         {companiesQueryErrorMessage}
-                    </div>}
+                    </div>
+                }
                 <GridComponent dataSource={companiesQuery.data} commandClick={handleGridCommand} allowSorting={true}>
                     <ColumnsDirective>
                         <ColumnDirective headerText="Name" field="name" />
