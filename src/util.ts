@@ -26,9 +26,19 @@ export function useSpinnerCallback(shouldShowSpinner: boolean) {
     }, [shouldShowSpinner]);
 }
 
-export function getErrorDisplayMessage(error: any) {
+const htmlParser = new DOMParser();
+
+export async function getErrorDisplayMessage(error: any) {
     if (error instanceof ApiError) {
-        // todo - get message from response
+        const responseText = await error.response.text();
+
+        const contentType = error.response.headers.get("content-type");
+        const mimeType = contentType?.substring(0, contentType.indexOf(";")).toLowerCase();
+        if (mimeType === "text/html") {
+            const responseDoc = htmlParser.parseFromString(responseText, "text/html");
+            return responseDoc.body.innerText;
+        }
+        return responseText;
     }
 
     if (error instanceof Error) {
