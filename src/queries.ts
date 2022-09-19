@@ -10,7 +10,7 @@ export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query
     const context = useAuthContext();
 
     useEffect(() => {
-        if (query.isError && query.error instanceof ApiError && query.error.status === 401) {
+        if (query.isError && query.error instanceof ApiError && query.error.response.status === 401) {
             context.logout();
         }
     }, [context, query.isError, query.error]);    
