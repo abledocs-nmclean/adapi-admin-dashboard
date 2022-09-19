@@ -4,12 +4,13 @@ import { AuthenticatedUser } from './user';
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
 
 export class ApiError extends Error {
-    status: number;
-    constructor(status: number, message: string) {
-        super(message);
+    response: Response;
+
+    constructor(response: Response) {
+        super(response.statusText);
         Object.setPrototypeOf(this, ApiError.prototype);
-        this.status = status;
-    }    
+        this.response = response;
+    }
 }
 
 async function sendJson(path: string, method: HttpMethod, body: object | null, headers=new Headers()) {
@@ -20,7 +21,7 @@ async function sendJson(path: string, method: HttpMethod, body: object | null, h
     }
     const response = await fetch(`${process.env.REACT_APP_ADAPI_BASE_URL}/${path}`, requestInit);
     if (!response.ok) {
-        throw new ApiError(response.status, response.statusText);
+        throw new ApiError(response);
     }
     return response;
 }
