@@ -24,6 +24,11 @@
     white-space: pre-wrap;
 }
 
+.login-page .token-expired {
+    color: #FF2222;
+    margin-bottom: 1em;
+  }
+
 .login-page .e-control-wrapper {
     margin-bottom: 1em;
 }

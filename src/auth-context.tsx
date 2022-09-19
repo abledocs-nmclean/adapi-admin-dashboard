@@ -9,7 +9,7 @@ type AuthContextModel = {
     logoutReason?: LogoutReason
 };
 
-type LogoutReason = "AuthenticationFailed" | "TokenExpired" | "Error";
+type LogoutReason = "InvalidCredentials" | "TokenExpired" | "Error";
 
 const AuthContext = createContext<AuthContextModel | null>(null);
 
@@ -25,7 +25,7 @@ export function AuthProvider({children}: React.PropsWithChildren) {
         try {
             jwt = await authorize({username, password});
         } catch (error) {
-            logout(error instanceof ApiError && error.response.status === 401 ? "AuthenticationFailed" : "Error");
+            logout(error instanceof ApiError && error.response.status === 401 ? "InvalidCredentials" : "Error");
             throw error;
         }
         const newUser: AuthenticatedUser = {username, jwt};

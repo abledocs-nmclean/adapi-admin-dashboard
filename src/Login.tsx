@@ -24,7 +24,7 @@ export default function Login() {
         [username, password]
     );
 
-    const { login } = useAuthContext();
+    const { login, logoutReason } = useAuthContext();
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -51,13 +51,18 @@ export default function Login() {
     return (
         <div className="login-page">
             <form onSubmit={handleLogin}>
+                {logoutReason === "TokenExpired" &&
+                    <div className="token-expired" role="alert">
+                        Session has expired. Please log in again.
+                    </div>
+                }
                 <h1>Login</h1>
                 <TextBoxComponent placeholder="Username" cssClass="e-outline" floatLabelType="Auto"
                     value={username} input={({value}) => setUsername(value)} />
                 <TextBoxComponent type="password" placeholder="Password" cssClass="e-outline" floatLabelType="Auto"
                     value={password} input={({value}) => setPassword(value)} />
-                <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>
-                {errorMessage &&
+                <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>                
+                {errorMessage && logoutReason !== "TokenExpired" &&
                     <div className="error" role="alert">
                         Couldn't log in:<br />
                         {errorMessage}
