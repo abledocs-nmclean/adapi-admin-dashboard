@@ -1,17 +1,24 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useMemo } from 'react';
 import { AuthenticatedUser, retrieveUser, storeUser, clearUserStorage } from './user';
 import { authorize } from './api';
 
 type AuthContextModel = {
     user: AuthenticatedUser | null,
     login: (username: string, password: string) => Promise<void>,
-    logout: () => void
+    logout: (reason?: LogoutReason) => void,
+    logoutReason?: LogoutReason
 };
+
+type LogoutReason = "AuthenticationFailed" | "TokenExpired"
 
 const AuthContext = createContext<AuthContextModel | null>(null);
 
 export function AuthProvider({children}: React.PropsWithChildren) {
     const [user, setUser] = useState(retrieveUser);
+
+    // logoutReason will update when login state changes.
+    // When logged in, it will be undefined, otherwise it will be the reason given for the most recent logout
+    const [logoutReason, setLogoutReason] = useState<LogoutReason | undefined>();
 
     async function login(username: string, password: string) {
         let jwt: string | undefined;
@@ -19,22 +26,24 @@ export function AuthProvider({children}: React.PropsWithChildren) {
             jwt = await authorize({username, password});
         } catch (err) {
             if (user !== null) {
-                logout();
+                logout("AuthenticationFailed");
             }
             throw err;
         }
         const newUser: AuthenticatedUser = {username, jwt};
         storeUser(newUser);
         setUser(newUser);
+        setLogoutReason(undefined);
     }
 
-    function logout() {
+    function logout(reason?: LogoutReason) {
         clearUserStorage();
         setUser(null);
+        setLogoutReason(reason);
     }
 
     return (
-        <AuthContext.Provider value={{user, login, logout}}>
+        <AuthContext.Provider value={{user, login, logout, logoutReason}}>
             {children}
         </AuthContext.Provider>
     )

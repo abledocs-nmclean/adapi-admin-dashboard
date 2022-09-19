@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { GridComponent, ColumnDirective, ColumnsDirective,
     CommandColumn, CommandModel, CommandClickEventArgs,
@@ -19,12 +19,12 @@ export default function CompanyList() {
 
     const companiesQueryErrorMessage = useErrorMessage(companiesQuery.error);
    
-    const commands: CommandWithId[] = useMemo(() => ([
+    const [commands] = useState<CommandWithId[]>(() => [
         {
             id: "LOAD",
-            buttonOption: { content: "Load" },
+            buttonOption: { content: "Load" }
         }
-    ]), []);
+    ]);
 
     function handleGridCommand(e: CommandClickEventArgs) {
         const command = e.commandColumn as CommandWithId | undefined;

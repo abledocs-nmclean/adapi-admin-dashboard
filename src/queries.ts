@@ -11,7 +11,7 @@ export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query
 
     useEffect(() => {
         if (query.isError && query.error instanceof ApiError && query.error.response.status === 401) {
-            context.logout();
+            context.logout("TokenExpired");
         }
     }, [context, query.isError, query.error]);    
 
