@@ -12,7 +12,7 @@ type AuthContextModelBase = {
     expire: () => void,
 };
 
-// let the type checker know that user is not null when authState = LoggedIn
+// let the type checker know that user is not null when authState = LoggedIn, otherwise null
 interface AuthContextModelLoggedIn extends AuthContextModelBase {
     authState: "LoggedIn";
     user: AuthenticatedUser;

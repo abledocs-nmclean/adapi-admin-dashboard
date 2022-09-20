@@ -13,6 +13,7 @@ export class ApiError extends Error {
     }
 }
 
+// send an object as json (or null for no body) to the given API path
 async function sendJson(path: string, method: HttpMethod, body: object | null, headers=new Headers()) {
     const requestInit: RequestInit = { method, headers };
     if (body !== null) {

@@ -18,6 +18,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (authState !== "LoggedIn") {
+            // store current location on navigation so the login page can navigate back here on successful login
             navigate("/login", {state: {previousLocation: location} as LocationState});
         }
     }, [user, navigate, location]);

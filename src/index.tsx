@@ -23,6 +23,10 @@ const root = ReactDOM.createRoot(
   document.getElementById('root')!
 );
 root.render(
+  // StrictMode is disabled because it causes the Syncfusion Grid component to fail to render.
+  // This seems to be related to changes in React 18 that unmounts and remounts components.
+  // See: https://reactjs.org/docs/strict-mode.html#ensuring-reusable-state
+  // Syncfusion may need to update their components to better support unmounting and remounting.
   // <React.StrictMode>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
