@@ -1,14 +1,36 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { AuthenticatedUser } from './api';
+import { useEffect } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useAuthContext } from './auth-context';
+import CompanyList from './CompanyList';
+import CompanyDetails from './CompanyDetails';
+import './Dashboard.css';
 
 export default function Dashboard() {
-    const userItem = localStorage.getItem("user");
-    if (userItem === null) {
-        return <Navigate to="/" replace />;
+    useEffect(() => {
+        document.title = "Dashboard";
+    }, []);
+
+    const { user } = useAuthContext();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user === null) {
+            navigate("/login");
+        }
+    }, [user, navigate]);
+
+    if (user === null) {
+        return <></>;
     }
 
-    const user: AuthenticatedUser = JSON.parse(userItem);
-
-    return <>User "{user.username}" logged in.</>;
+    return (
+        <div className="dashboard">
+            User "{user.username}" logged in.
+            <Routes>
+                <Route index element={<CompanyList />} />
+                <Route path="company/:id" element={<CompanyDetails />} />
+            </Routes>
+        </div>
+    );
 }

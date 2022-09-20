@@ -1,49 +1,63 @@
-import React from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import * as API from './api'
+import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
+import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
+import { ApiError } from './api'
+import { useAuthContext } from './auth-context';
 import './Login.css';
 
 export default function Login() {
+    useEffect(() => {
+        document.title = "Login";
+    }, []);
+
     const navigate = useNavigate();
 
-    const [username, setUsername] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const isValid = React.useMemo(
+    const isValid = useMemo(
         () => username.length > 0 && password.length > 0,
         [username, password]
     );
+
+    const { login } = useAuthContext();
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         
         setIsLoading(true);
-        let response: Response | undefined;
         try {
-            response = await API.authorize({ username, password });
-        } catch {
-            // todo
+            await login(username, password);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                // todo
+            }
+            return;
         } finally {
             setIsLoading(false);
         }
 
-        if (response?.ok) {
-            navigate("/dashboard");
-        }
-      }
+        navigate("/");
+    }
 
-      return (
-        <form onSubmit={handleLogin}>
-            <label htmlFor="username">Username:</label>
-            <input name="username" type="text"
-                   value={username} onChange={e => setUsername(e.target.value)} />
-            <label htmlFor="password">Password:</label>
-            <input name="password" type="password"
-                   value={password} onChange={e => setPassword(e.target.value)} />
-            <button type="submit" disabled={isLoading || !isValid}>Login</button>
-        </form>
-      );
+    return (
+        <div className="login-page">
+            <form onSubmit={handleLogin}>
+                <h1>Login</h1>
+                <div className="field-container">
+                    <TextBoxComponent placeholder="Username" cssClass="e-outline" floatLabelType="Auto"
+                        value={username} input={({value}) => setUsername(value)} />
+                </div>
+                <div className="field-container">
+                    <TextBoxComponent type="password" placeholder="Password" cssClass="e-outline" floatLabelType="Auto"
+                        value={password} input={({value}) => setPassword(value)} />
+                </div>
+                <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>
+            </form>
+        </div>
+    );
 }
       
       
