@@ -4,7 +4,7 @@ import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { LocationState } from './location';
 import { useAuthContext } from './auth-context';
-import { getErrorDisplayMessage } from './util';
+import { useErrorMessage } from './util';
 import './Login.css';
 
 export default function Login() {
@@ -19,25 +19,23 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const isValid = useMemo(
         () => username.length > 0 && password.length > 0,
         [username, password]
     );
 
-    const { login, authState } = useAuthContext();
+    const { login, authState, error } = useAuthContext();
+
+    const errorMessage = useErrorMessage(error);
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         
-        setErrorMessage(null);
         setIsLoading(true);
         try {
             await login(username, password);
-        } catch (error) {
-            const displayMessage = await getErrorDisplayMessage(error);
-            setErrorMessage(displayMessage);
+        } catch {
             return;
         } finally {
             setIsLoading(false);
@@ -74,5 +72,3 @@ export default function Login() {
         </div>
     );
 }
-      
-      
