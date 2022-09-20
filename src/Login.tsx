@@ -37,12 +37,8 @@ export default function Login() {
         try {
             await login(username, password);
         } catch (error) {
-            if (error instanceof ApiError && error.response.status === 401) {
-                setErrorMessage("Username or password is incorrect");
-            } else {
-                const displayMessage = await getErrorDisplayMessage(error);
-                setErrorMessage(displayMessage);
-            }
+            const displayMessage = await getErrorDisplayMessage(error);
+            setErrorMessage(displayMessage);
             return;
         } finally {
             setIsLoading(false);
@@ -64,8 +60,12 @@ export default function Login() {
                     value={username} input={({value}) => setUsername(value)} />
                 <TextBoxComponent type="password" placeholder="Password" cssClass="e-outline" floatLabelType="Auto"
                     value={password} input={({value}) => setPassword(value)} />
-                <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>                
-                {errorMessage && logoutReason !== "TokenExpired" &&
+                <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>
+                {logoutReason === "InvalidCredentials" ?
+                    <div className="error" role="alert">
+                        Username or password is incorrect.
+                    </div>
+                : logoutReason === "Error" &&
                     <div className="error" role="alert">
                         Couldn't log in:<br />
                         {errorMessage}

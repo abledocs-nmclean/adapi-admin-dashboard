@@ -18,7 +18,7 @@ export function AuthProvider({children}: React.PropsWithChildren) {
 
     // logoutReason will update when login state changes.
     // When logged in, it will be undefined, otherwise it will be the reason given for the most recent logout
-    const [logoutReason, setLogoutReason] = useState<LogoutReason | undefined>();
+    const [logoutReason, setLogoutReason] = useState<LogoutReason>();
 
     async function login(username: string, password: string) {
         let jwt: string | undefined;
