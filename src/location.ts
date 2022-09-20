@@ -1,3 +1,3 @@
 import { To } from "react-router-dom";
 
-export type LocationState = {from: To};
+export type LocationState = {previousLocation: To};

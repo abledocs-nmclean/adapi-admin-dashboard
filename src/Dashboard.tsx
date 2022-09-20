@@ -11,18 +11,18 @@ export default function Dashboard() {
         document.title = "Dashboard";
     }, []);
 
-    const { user } = useAuthContext();
+    const { user, authState } = useAuthContext();
 
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        if (user === null) {
-            navigate("/login", {state: {from: location} as LocationState});
+        if (authState !== "LoggedIn") {
+            navigate("/login", {state: {previousLocation: location} as LocationState});
         }
-    }, [user, navigate]);
+    }, [user, navigate, location]);
 
-    if (user === null) {
+    if (authState !== "LoggedIn") {
         return <></>;
     }
 

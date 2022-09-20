@@ -1,47 +1,69 @@
-import React, { createContext, useState, useContext, useMemo } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { AuthenticatedUser, retrieveUser, storeUser, clearUserStorage } from './user';
 import { ApiError, authorize } from './api';
 
-type AuthContextModel = {
+type AuthState = "None" | "LoggedIn" | "InvalidCredentials" | "Error" | "TokenExpired";
+
+type AuthContextModelBase = {
+    authState: AuthState
     user: AuthenticatedUser | null,
     login: (username: string, password: string) => Promise<void>,
-    logout: (reason?: LogoutReason) => void,
-    logoutReason?: LogoutReason
+    logout: () => void,
+    expire: () => void,
 };
 
-type LogoutReason = "InvalidCredentials" | "TokenExpired" | "Error";
+// let the type checker know that user is not null when authState = LoggedIn
+interface AuthContextModelLoggedIn extends AuthContextModelBase {
+    authState: "LoggedIn";
+    user: AuthenticatedUser;
+}
+interface AuthContextModelLoggedOut extends AuthContextModelBase {
+    authState: "None" | "InvalidCredentials" | "Error" | "TokenExpired";
+    user: null;
+}
+type AuthContextModel = AuthContextModelLoggedIn | AuthContextModelLoggedOut;
 
 const AuthContext = createContext<AuthContextModel | null>(null);
 
 export function AuthProvider({children}: React.PropsWithChildren) {
     const [user, setUser] = useState(retrieveUser);
 
-    // logoutReason will update when login state changes.
-    // When logged in, it will be undefined, otherwise it will be the reason given for the most recent logout
-    const [logoutReason, setLogoutReason] = useState<LogoutReason>();
+    const [authState, setAuthState] = useState<AuthState>(() => user ? "LoggedIn" : "None");
 
     async function login(username: string, password: string) {
         let jwt: string | undefined;
         try {
             jwt = await authorize({username, password});
         } catch (error) {
-            logout(error instanceof ApiError && error.response.status === 401 ? "InvalidCredentials" : "Error");
+            if (authState === "LoggedIn") {
+                clearUser();
+            }
+            setAuthState(error instanceof ApiError && error.response.status === 401 ? "InvalidCredentials" : "Error");
             throw error;
         }
         const newUser: AuthenticatedUser = {username, jwt};
         storeUser(newUser);
         setUser(newUser);
-        setLogoutReason(undefined);
+        setAuthState("LoggedIn");
     }
 
-    function logout(reason?: LogoutReason) {
+    function clearUser() {
         clearUserStorage();
         setUser(null);
-        setLogoutReason(reason);
+    }
+
+    function logout() {
+        clearUser();
+        setAuthState("None");
+    }
+
+    function expire() {
+        clearUser();
+        setAuthState("TokenExpired");
     }
 
     return (
-        <AuthContext.Provider value={{user, login, logout, logoutReason}}>
+        <AuthContext.Provider value={{authState, user, login, logout, expire} as AuthContextModel}>
             {children}
         </AuthContext.Provider>
     )

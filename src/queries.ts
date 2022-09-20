@@ -5,15 +5,15 @@ import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
 import { User } from "./model";
 
-// wrap a query that uses authorization, to trigger a logout when authorization has expired
-export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query: TQuery) {
+// wrap a query that uses authorization, to detect when authorization has expired
+export function useQueryWithTokenExpiry<TQuery extends QueryObserverBaseResult>(query: TQuery) {
     const context = useAuthContext();
 
     useEffect(() => {
         if (query.isError && query.error instanceof ApiError && query.error.response.status === 401) {
-            context.logout("TokenExpired");
+            context.expire();
         }
-    }, [context, query.isError, query.error]);    
+    }, [context, query.isError, query.error]);
 
     return query;
 }
@@ -21,7 +21,7 @@ export function useQueryWithLogout<TQuery extends QueryObserverBaseResult>(query
 export function useCompaniesQuery() {
     const { user } = useAuthContext();
 
-    return useQueryWithLogout(useQuery(
+    return useQueryWithTokenExpiry(useQuery(
         ["companies", user],
         () => getAllCompanies(user!),
         {
@@ -34,7 +34,7 @@ export function useCompaniesQuery() {
 export function useCompanyQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
-    return useQueryWithLogout(useQuery(
+    return useQueryWithTokenExpiry(useQuery(
         ["company", user, id],
         () => getCompany(user!, id!),
         {
@@ -47,7 +47,7 @@ export function useCompanyQuery(id: string | undefined) {
 export function useUsersQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
-    return useQueryWithLogout(useQuery(
+    return useQueryWithTokenExpiry(useQuery(
         ["users", user, id],
         () => getUsersByCompany(user!, id!),
         {

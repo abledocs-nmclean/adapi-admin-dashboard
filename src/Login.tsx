@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { LocationState } from './location';
-import { ApiError } from './api'
 import { useAuthContext } from './auth-context';
 import { getErrorDisplayMessage } from './util';
 import './Login.css';
@@ -27,7 +26,7 @@ export default function Login() {
         [username, password]
     );
 
-    const { login, logoutReason } = useAuthContext();
+    const { login, authState } = useAuthContext();
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -44,13 +43,13 @@ export default function Login() {
             setIsLoading(false);
         }
 
-        navigate(locationState?.from ?? "/");
+        navigate(locationState?.previousLocation ?? "/");
     }
 
     return (
         <div className="login-page">
             <form onSubmit={handleLogin}>
-                {logoutReason === "TokenExpired" &&
+                {authState === "TokenExpired" &&
                     <div className="token-expired" role="alert">
                         Session has expired. Please log in again.
                     </div>
@@ -61,11 +60,11 @@ export default function Login() {
                 <TextBoxComponent type="password" placeholder="Password" cssClass="e-outline" floatLabelType="Auto"
                     value={password} input={({value}) => setPassword(value)} />
                 <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>
-                {logoutReason === "InvalidCredentials" ?
+                {authState === "InvalidCredentials" ?
                     <div className="error" role="alert">
                         Username or password is incorrect.
                     </div>
-                : logoutReason === "Error" &&
+                : authState === "Error" &&
                     <div className="error" role="alert">
                         Couldn't log in:<br />
                         {errorMessage}
