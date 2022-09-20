@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
+import { LocationState } from './location';
 import { ApiError } from './api'
 import { useAuthContext } from './auth-context';
 import { getErrorDisplayMessage } from './util';
@@ -13,6 +14,8 @@ export default function Login() {
     }, []);
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const locationState = location.state as LocationState | undefined;
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -45,7 +48,7 @@ export default function Login() {
             setIsLoading(false);
         }
 
-        navigate("/");
+        navigate(locationState?.from ?? "/");
     }
 
     return (
