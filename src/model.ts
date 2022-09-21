@@ -10,6 +10,11 @@ export type Company = {
     templates: DocumentTemplate[]
 };
 
+type OptionalCompanyProps = Pick<Company, "adminUserIds" | "templates">;
+export type CreateCompanyRequest =
+    Omit<Company, keyof (Pick<Company, "id"> & OptionalCompanyProps)>
+    & Partial<OptionalCompanyProps>;
+
 export type DocumentTemplate = {
     commonFileId: string,
     match: string,
