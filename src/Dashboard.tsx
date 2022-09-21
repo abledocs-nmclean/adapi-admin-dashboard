@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './auth-context';
+import { LocationState } from './location';
 import CompanyList from './CompanyList';
 import CompanyDetails from './CompanyDetails';
 import './Dashboard.css';
@@ -10,17 +11,19 @@ export default function Dashboard() {
         document.title = "Dashboard";
     }, []);
 
-    const { user } = useAuthContext();
+    const { user, authState } = useAuthContext();
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        if (user === null) {
-            navigate("/login");
+        if (authState !== "LoggedIn") {
+            // store current location on navigation so the login page can navigate back here on successful login
+            navigate("/login", {state: {previousLocation: location} as LocationState});
         }
-    }, [user, navigate]);
+    }, [user, navigate, location]);
 
-    if (user === null) {
+    if (authState !== "LoggedIn") {
         return <></>;
     }
 

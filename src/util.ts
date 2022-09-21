@@ -1,7 +1,10 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
+import { ApiError } from "./api";
 
+// returns a callback that sets up an HTML element to be the target for a spinner, and toggles the spinner
 export function useSpinnerCallback(shouldShowSpinner: boolean) {
+    // tracks whether this HTML element has already been initialized with a spinner
     const containerRef = useRef<HTMLElement | null>(null);
 
     return useCallback((container: HTMLElement | null) => {
@@ -23,4 +26,50 @@ export function useSpinnerCallback(shouldShowSpinner: boolean) {
             hideSpinner(container);
         }
     }, [shouldShowSpinner]);
+}
+
+const htmlParser = new DOMParser();
+
+export async function getErrorDisplayMessage(error: unknown) {
+    // API errors usually have HTML responses. Use the <body> text as the error message.
+    if (error instanceof ApiError) {
+        const responseText = await error.response.text();
+
+        const contentType = error.response.headers.get("content-type");
+        const mimeType = contentType?.substring(0, contentType.indexOf(";")).toLowerCase();
+        if (mimeType === "text/html") {
+            const responseDoc = htmlParser.parseFromString(responseText, "text/html");
+            return responseDoc.body.innerText;
+        }
+
+        // return the original text if it is not HTML
+        return responseText;
+    }
+
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    // error is not an Error type
+    return "unknown error";
+}
+
+// React hook that translates an error object to an error message string and updates state accordingly
+export function useErrorMessage(error: unknown) {
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        updateErrorMessage();
+
+        async function updateErrorMessage() {
+            if (error) {
+                const message = await getErrorDisplayMessage(error);
+                setErrorMessage(message);
+            } else {
+                setErrorMessage(null);
+            }
+        }            
+    }, [error]);
+
+    return errorMessage;
 }

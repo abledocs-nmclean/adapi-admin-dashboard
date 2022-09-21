@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import { NumericTextBoxComponent } from '@syncfusion/ej2-react-inputs';
-import './App.css';
+// import './App.css';
 
 function App() {
   return (
