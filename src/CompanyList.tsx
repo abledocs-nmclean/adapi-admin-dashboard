@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useState } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { GridComponent, ColumnDirective, ColumnsDirective,
     CommandColumn, CommandModel, CommandClickEventArgs,
     Inject, Sort, Resize} from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
-import { Company } from './model';
 import { useErrorMessage, useSpinnerCallback } from "./util";
+import { Company, CreateCompanyRequest } from './model';
+import CompanyEdit from './CompanyEdit';
 
 // add id property to commands for reliable comparison
 type CommandWithId = CommandModel & {id: string};
@@ -36,9 +38,22 @@ export default function CompanyList() {
         }
     }
 
+    function handleCompanyAddOpen(e: React.MouseEvent) {
+        navigate("add");
+    }
+
+    function handleCompanyAddSubmit(result: CreateCompanyRequest) {
+        // todo send request
+        navigate("..");
+    }
+
     return (
         <div>
+            <Routes>
+                <Route path="add" element={<CompanyEdit onSubmit={handleCompanyAddSubmit} />} />
+            </Routes>
             <h1>Companies</h1>
+            <ButtonComponent onClick={handleCompanyAddOpen}>add</ButtonComponent>
             <div ref={companiesSpinnerCallback}>
                 {companiesQueryErrorMessage &&
                     <div className="data-error" role="alert">
