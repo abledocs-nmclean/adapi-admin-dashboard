@@ -1,4 +1,4 @@
-import { AuthorizeRequest, Company, User } from './model';
+import { AuthorizeRequest, Company, User, CreateCompanyRequest } from './model';
 import { AuthenticatedUser } from './user';
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
@@ -50,4 +50,9 @@ export async function getCompany(user: AuthenticatedUser, id: string) {
 export async function getUsersByCompany(user: AuthenticatedUser, id: string) {
     const response = await sendJson(`companies/${id}/users`, "GET", null, new Headers(getAuthHeader(user)));
     return await response.json() as User[];
+}
+
+export async function addCompany(user: AuthenticatedUser, request: CreateCompanyRequest) {
+    const response = await sendJson("companies", "POST", request, new Headers(getAuthHeader(user)));
+    return await response.json() as Company;
 }
