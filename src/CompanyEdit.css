@@ -1,0 +1,11 @@
+.company-edit .error {
+    background-color: #FF4444;
+    color: white;
+    margin-top: 1em;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+
+.company-edit .e-control-wrapper {
+    margin-bottom: 1em;
+}
