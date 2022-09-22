@@ -25,6 +25,11 @@ code {
     monospace;
 }
 
+h1 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
 .data-error {
   white-space: pre-wrap;
   color: #FF2222;
