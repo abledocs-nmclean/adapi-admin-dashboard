@@ -1,60 +1,68 @@
 import { useMemo, useEffect } from "react";
-import { useQuery, QueryObserverBaseResult } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
 import { User } from "./model";
 
-// wrap a query that uses authorization, to detect when authorization has expired
-export function useQueryWithTokenExpiry<TQuery extends QueryObserverBaseResult>(query: TQuery) {
-    const context = useAuthContext();
+// React hook that updates the auth state when we detect authorization has expired from an error response
+export function useTokenExpiryEffect(error: unknown) {
+    const { expire } = useAuthContext();
 
     useEffect(() => {
-        if (query.isError && query.error instanceof ApiError && query.error.response.status === 401) {
-            context.expire();
+        if (error instanceof ApiError && error.response.status === 401) {
+            expire();
         }
-    }, [context, query.isError, query.error]);
-
-    return query;
+    }, [expire, error]);
 }
 
 export function useCompaniesQuery() {
     const { user } = useAuthContext();
 
-    return useQueryWithTokenExpiry(useQuery(
+    const query = useQuery(
         ["companies", user],
         () => getAllCompanies(user!),
         {
             enabled: user !== null,
             retry: false
         }
-    ));
+    );
+
+    useTokenExpiryEffect(query.error);
+
+    return query;
 }
 
 export function useCompanyQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
-    return useQueryWithTokenExpiry(useQuery(
+    const query = useQuery(
         ["company", user, id],
         () => getCompany(user!, id!),
         {
             enabled: user !== null && id !== undefined,
             retry: false
         }
-    ));
+    );
+
+    useTokenExpiryEffect(query.error);
+
+    return query;
 }
 
 export function useUsersQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
-    return useQueryWithTokenExpiry(useQuery(
+    const query = useQuery(
         ["users", user, id],
         () => getUsersByCompany(user!, id!),
         {
             enabled: user !== null && id !== undefined,
             retry: false
         }
-    ));
+    );
+
+    return query;
 }
 
 // add isAdmin to the User type returned from the API
