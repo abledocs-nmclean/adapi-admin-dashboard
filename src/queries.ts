@@ -94,6 +94,8 @@ export function useUsersQuery(id: string | undefined) {
         }
     );
 
+    useTokenExpiryEffect(query.error);
+
     return query;
 }
 
