@@ -1,9 +1,9 @@
 import { useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getAllCompanies, getCompany, getUsersByCompany } from "./api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { addCompany, getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
-import { User } from "./model";
+import { Company, CreateCompanyRequest, User } from "./model";
 
 // React hook that updates the auth state when we detect authorization has expired from an error response
 export function useTokenExpiryEffect(error: unknown) {
@@ -48,6 +48,33 @@ export function useCompanyQuery(id: string | undefined) {
     useTokenExpiryEffect(query.error);
 
     return query;
+}
+
+export function useCompanyAddMutation() {
+    const queryClient = useQueryClient();
+    const { user } = useAuthContext();
+
+    const mutation = useMutation(
+        (request: CreateCompanyRequest) => {
+            return addCompany(user!, request);
+        },
+        {
+            onSuccess: (company) => {
+                queryClient.setQueryData<Company>(["company", user, company.id], company);
+                
+                // if the companies query has already loaded, add the new company to the existing list
+                queryClient.setQueryData<Company[]>(["companies", user], (existingCompanies) => {
+                    if (!existingCompanies) return;
+                    return [...existingCompanies, company];
+                });
+                // todo do this for each [comapny, user, id] on [companies, user] success
+            }
+        }
+    );
+
+    useTokenExpiryEffect(mutation.error);
+
+    return mutation;
 }
 
 export function useUsersQuery(id: string | undefined) {
