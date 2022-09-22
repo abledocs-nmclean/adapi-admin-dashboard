@@ -8,6 +8,7 @@ import { useCompaniesQuery } from "./queries";
 import { useErrorMessage, useSpinnerCallback } from "./util";
 import { Company } from './model';
 import CompanyEdit from './CompanyEdit';
+import './CompanyList.css';
 
 // add id property to commands for reliable comparison
 type CommandWithId = CommandModel & {id: string};
@@ -51,12 +52,12 @@ export default function CompanyList() {
     }
 
     return (
-        <div>
+        <div className="company-list">
             <Routes>
                 <Route path="add" element={<CompanyEdit onSuccess={handleCompanyAddSuccess} onCancel={handleCompanyAddCancel} />} />
             </Routes>
             <h1>Companies</h1>
-            <ButtonComponent onClick={handleCompanyAddOpen}>add</ButtonComponent>
+            <ButtonComponent className="add-button" iconCss="e-icons e-circle-add" onClick={handleCompanyAddOpen}>Add Company</ButtonComponent>
             <div ref={companiesSpinnerCallback}>
                 {companiesQueryErrorMessage &&
                     <div className="data-error" role="alert">
