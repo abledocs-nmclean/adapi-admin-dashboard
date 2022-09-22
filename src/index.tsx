@@ -15,7 +15,13 @@ if (license !== undefined) {
   registerLicense(license);
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 30
+    }
+  }
+});
 
 enableRipple(true);
 

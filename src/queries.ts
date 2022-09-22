@@ -16,23 +16,6 @@ export function useTokenExpiryEffect(error: unknown) {
     }, [expire, error]);
 }
 
-export function useCompaniesQuery() {
-    const { user } = useAuthContext();
-
-    const query = useQuery(
-        ["companies", user],
-        () => getAllCompanies(user!),
-        {
-            enabled: user !== null,
-            retry: false
-        }
-    );
-
-    useTokenExpiryEffect(query.error);
-
-    return query;
-}
-
 export function useCompanyQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
@@ -42,6 +25,29 @@ export function useCompanyQuery(id: string | undefined) {
         {
             enabled: user !== null && id !== undefined,
             retry: false
+        }
+    );
+
+    useTokenExpiryEffect(query.error);
+
+    return query;
+}
+
+export function useCompaniesQuery() {
+    const queryClient = useQueryClient();
+    const { user } = useAuthContext();
+
+    const query = useQuery(
+        ["companies", user],
+        () => getAllCompanies(user!),
+        {
+            enabled: user !== null,
+            retry: false,
+            onSuccess: (companies) => {
+                companies.forEach((company) => {
+                    queryClient.setQueryData<Company>(["company", user, company.id], company);
+                });
+            }
         }
     );
 
@@ -67,7 +73,6 @@ export function useCompanyAddMutation() {
                     if (!existingCompanies) return;
                     return [...existingCompanies, company];
                 });
-                // todo do this for each [comapny, user, id] on [companies, user] success
             }
         }
     );
