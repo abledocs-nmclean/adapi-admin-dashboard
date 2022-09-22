@@ -15,7 +15,7 @@ type CompanyEditProps = {
 export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
     const [name, setName] = useState("");
     const [adoClientId, setAdoClientId] = useState<number>();
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(true);
 
     const isValid = useMemo(() => {
         return name.length > 0 && adoClientId !== undefined;
