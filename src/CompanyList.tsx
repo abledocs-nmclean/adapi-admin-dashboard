@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { GridComponent, ColumnDirective, ColumnsDirective,
@@ -6,7 +6,7 @@ import { GridComponent, ColumnDirective, ColumnsDirective,
     Inject, Sort, Resize} from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
 import { useErrorMessage, useSpinnerCallback } from "./util";
-import { Company, CreateCompanyRequest } from './model';
+import { Company } from './model';
 import CompanyEdit from './CompanyEdit';
 
 // add id property to commands for reliable comparison
@@ -20,7 +20,7 @@ export default function CompanyList() {
     const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
 
     const companiesQueryErrorMessage = useErrorMessage(companiesQuery.error);
-   
+  
     const [commands] = useState<CommandWithId[]>(() => [
         {
             id: "LOAD",
@@ -42,15 +42,14 @@ export default function CompanyList() {
         navigate("add");
     }
 
-    function handleCompanyAddSubmit(result: CreateCompanyRequest) {
-        // todo send request
+    function handleCompanyAddSuccess(company: Company) {
         navigate("..");
     }
 
     return (
         <div>
             <Routes>
-                <Route path="add" element={<CompanyEdit onSubmit={handleCompanyAddSubmit} />} />
+                <Route path="add" element={<CompanyEdit onSuccess={handleCompanyAddSuccess} />} />
             </Routes>
             <h1>Companies</h1>
             <ButtonComponent onClick={handleCompanyAddOpen}>add</ButtonComponent>

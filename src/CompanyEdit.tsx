@@ -2,13 +2,14 @@ import React, { useMemo, useState } from "react";
 import { CheckBoxComponent, ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent, NumericTextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { DialogComponent } from '@syncfusion/ej2-react-popups';
-import { CreateCompanyRequest } from "./model";
+import { useCompanyAddMutation } from "./queries";
+import { Company } from "./model";
 
 type CompanyEditProps = {
-    onSubmit: (company: CreateCompanyRequest) => void;
+    onSuccess: (company: Company) => void;
 };
 
-export default function CompanyEdit({onSubmit}: CompanyEditProps) {
+export default function CompanyEdit({onSuccess}: CompanyEditProps) {
     const [name, setName] = useState("");
     const [adoClientId, setAdoClientId] = useState<number | undefined>();
     const [isActive, setIsActive] = useState(true);
@@ -17,8 +18,11 @@ export default function CompanyEdit({onSubmit}: CompanyEditProps) {
         return name.length > 0 && adoClientId !== undefined;
     }, [name, adoClientId, isActive]);
 
-    function handleSubmit() {
-        onSubmit({name, adoClientId: adoClientId!, isActive});
+    const companyAddMutation = useCompanyAddMutation();
+
+    async function handleSubmit() {
+        const company = await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive});
+        onSuccess(company);
     }
 
     return (
