@@ -1,3 +1,7 @@
+.company-edit {
+    padding-top: 5px;
+}
+
 .company-edit .error {
     background-color: #FF4444;
     color: white;

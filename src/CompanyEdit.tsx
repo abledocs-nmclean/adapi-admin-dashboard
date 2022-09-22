@@ -8,13 +8,14 @@ import { useErrorMessage } from "./util";
 import './CompanyEdit.css'
 
 type CompanyEditProps = {
-    onSuccess: (company: Company) => void;
+    onSuccess?: (company: Company) => void;
+    onCancel?: () => void
 };
 
-export default function CompanyEdit({onSuccess}: CompanyEditProps) {
+export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
     const [name, setName] = useState("");
     const [adoClientId, setAdoClientId] = useState<number>();
-    const [isActive, setIsActive] = useState(true);
+    const [isActive, setIsActive] = useState(false);
 
     const isValid = useMemo(() => {
         return name.length > 0 && adoClientId !== undefined;
@@ -26,11 +27,15 @@ export default function CompanyEdit({onSuccess}: CompanyEditProps) {
 
     async function handleSubmit() {
         const company = await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive});
-        onSuccess(company);
+        if (onSuccess) onSuccess(company);
+    }
+
+    function handleClose(e: {cancel: boolean}) {
+        if (onCancel) onCancel();
     }
 
     return (
-        <DialogComponent header="Add Company" isModal={true} width={500}
+        <DialogComponent header="Add Company" isModal={true} width={500} showCloseIcon={true} close={handleClose}
             buttons={[
                 {
                     buttonModel: {
@@ -50,7 +55,7 @@ export default function CompanyEdit({onSuccess}: CompanyEditProps) {
 
                 <TextBoxComponent type="number" placeholder="ADO Client ID" cssClass="e-outline" floatLabelType="Auto"
                     value={`${adoClientId ?? ""}`} input={({value}: InputEventArgs) => setAdoClientId(value ? parseInt(value) : undefined)} />
-                <CheckBoxComponent checked={isActive} change={({checked}) => setIsActive(checked)} />
+                <CheckBoxComponent label="Active" labelPosition={"Before"} checked={isActive} change={({checked}) => setIsActive(checked)} />
                 {companyAddErrorMessage &&
                     <div className="error" role="alert">
                         Problem adding company:<br />

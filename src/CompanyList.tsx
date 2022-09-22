@@ -46,10 +46,14 @@ export default function CompanyList() {
         navigate("..");
     }
 
+    function handleCompanyAddCancel() {
+        navigate("..");
+    }
+
     return (
         <div>
             <Routes>
-                <Route path="add" element={<CompanyEdit onSuccess={handleCompanyAddSuccess} />} />
+                <Route path="add" element={<CompanyEdit onSuccess={handleCompanyAddSuccess} onCancel={handleCompanyAddCancel} />} />
             </Routes>
             <h1>Companies</h1>
             <ButtonComponent onClick={handleCompanyAddOpen}>add</ButtonComponent>
