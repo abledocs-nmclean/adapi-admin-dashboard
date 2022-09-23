@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent, InputEventArgs } from '@syncfusion/ej2-react-inputs';
 import { DialogComponent } from '@syncfusion/ej2-react-popups';
-import { useCompanyAddMutation } from "./queries";
+import { useCompanyAddMutation, useCompanyEditMutation } from "./queries";
 import { Company } from "./model";
 import { useErrorMessage } from "./util";
 import './CompanyEdit.css'
@@ -10,23 +10,32 @@ import './CompanyEdit.css'
 type CompanyEditProps = {
     onSuccess?: (company: Company) => void;
     onCancel?: () => void
+    company?: Company
 };
 
-export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
-    const [name, setName] = useState("");
-    const [adoClientId, setAdoClientId] = useState<number>();
-    const [isActive, setIsActive] = useState(true);
+export default function CompanyEdit({onSuccess, onCancel, company: existingCompany}: CompanyEditProps) {
+    const [name, setName] = useState(() => existingCompany?.name ?? "");
+    const [adoClientId, setAdoClientId] = useState(existingCompany?.adoClientId);
+    const [isActive, setIsActive] = useState(() => existingCompany?.isActive ?? true);
 
     const isValid = useMemo(() => {
         return name.length > 0 && adoClientId !== undefined;
     }, [name, adoClientId, isActive]);
 
     const companyAddMutation = useCompanyAddMutation();
+    const companyEditMutation = useCompanyEditMutation();
 
     const companyAddErrorMessage = useErrorMessage(companyAddMutation.error);
 
+    async function sendChange() {
+        if (existingCompany) {
+            return await companyEditMutation.mutateAsync({id: existingCompany.id, request: {name, adoClientId, isActive}})
+        }
+        return await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive});
+    }
+
     async function handleSubmit() {
-        const company = await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive});
+        const company = await sendChange();
         if (onSuccess) onSuccess(company);
     }
 
@@ -42,7 +51,7 @@ export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
                         content: "Add",
                         isPrimary: true,
                         iconCss: 'e-icons e-check',
-                        disabled: companyAddMutation.isLoading || !isValid
+                        disabled: companyAddMutation.isLoading || !isValid                        
                     },
                     type: "submit",
                     click: handleSubmit
