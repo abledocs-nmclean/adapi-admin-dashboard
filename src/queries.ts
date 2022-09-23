@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/re
 import { addCompany, editCompany, getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
-import { Company, CreateCompanyRequest, User } from "./model";
+import { Company, CreateCompanyRequest, UpdateCompanyRequest, User } from "./model";
 
 // React hook that updates the auth state when we detect authorization has expired from an error response
 export function useTokenExpiryEffect(error: unknown) {
@@ -87,7 +87,7 @@ export function useCompanyEditMutation() {
     const { user } = useAuthContext();
 
     const mutation = useMutation(
-        ({id, request}: {id: string, request: CreateCompanyRequest}) => editCompany(user!, id, request),
+        ({id, request}: {id: string, request: UpdateCompanyRequest}) => editCompany(user!, id, request),
         {
             onSuccess: (company) => {
                 queryClient.setQueryData<Company>(["company", user, company.id], company);
