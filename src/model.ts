@@ -10,10 +10,12 @@ export type Company = {
     templates: DocumentTemplate[]
 };
 
-// helper to replace required properties with optional ones
+// helper to replace specific required properties with optional ones
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & {[P in K]?: T[P]};
 
 export type CreateCompanyRequest = MakeOptional<Omit<Company, "id">, "adminUserIds" | "templates">;
+
+export type UpdateCompanyRequest = Partial<Omit<Company, "id">>;
 
 export type DocumentTemplate = {
     commonFileId: string,

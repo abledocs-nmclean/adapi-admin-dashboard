@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { addCompany, getAllCompanies, getCompany, getUsersByCompany } from "./api";
+import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/react-query";
+import { addCompany, editCompany, getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
 import { Company, CreateCompanyRequest, User } from "./model";
@@ -73,6 +73,28 @@ export function useCompanyAddMutation() {
                     if (!existingCompanies) return;
                     return [...existingCompanies, company];
                 });
+            }
+        }
+    );
+
+    useTokenExpiryEffect(mutation.error);
+
+    return mutation;
+}
+
+export function useCompanyEditMutation() {
+    const queryClient = useQueryClient();
+    const { user } = useAuthContext();
+
+    const mutation = useMutation(
+        ({id, request}: {id: string, request: CreateCompanyRequest}) => editCompany(user!, id, request),
+        {
+            onSuccess: (company) => {
+                queryClient.setQueryData<Company>(["company", user, company.id], company);
+
+                queryClient.setQueryData<Company[]>(["companies", user], (existingCompanies) => {
+                    return existingCompanies?.map(c => c.id === company.id ? company : c);
+                })
             }
         }
     );
