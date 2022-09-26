@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { addCompany, editCompany, getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
@@ -129,8 +129,8 @@ export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin
     const usersQuery = useUsersQuery(id);
 
     return useMemo(() => {
-        if (usersQuery.isSuccess) {
-            if (companyQuery.isSuccess) {
+        if (usersQuery.data) {
+            if (companyQuery.data?.adminUserIds) {
                 // when the company data is available, use "adminUserIds" to populate each user's "isAdmin"
                 return usersQuery.data.map((userData) => {
                     return {
@@ -142,5 +142,5 @@ export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin
             // when only user data is available, use the original data
             return usersQuery.data;
         }
-    }, [companyQuery.isSuccess, companyQuery.data?.adminUserIds, usersQuery.isSuccess, usersQuery.data]);
+    }, [companyQuery.data?.adminUserIds, usersQuery.data]);
 }
