@@ -17,10 +17,11 @@ export default function CompanyEdit({onSuccess, onCancel, company: existingCompa
     const [name, setName] = useState(() => existingCompany?.name ?? "");
     const [adoClientId, setAdoClientId] = useState(existingCompany?.adoClientId);
     const [isActive, setIsActive] = useState(() => existingCompany?.isActive ?? true);
+    const [isTrial, setIsTrial] = useState(() => existingCompany?.isTrial ?? false);
 
     const isValid = useMemo(() => {
         return name.length > 0 && adoClientId !== undefined;
-    }, [name, adoClientId, isActive]);
+    }, [name, adoClientId]);
 
     const companyAddMutation = useCompanyAddMutation();
     const companyEditMutation = useCompanyEditMutation();
@@ -29,9 +30,9 @@ export default function CompanyEdit({onSuccess, onCancel, company: existingCompa
 
     async function sendChange() {
         if (existingCompany) {
-            return await companyEditMutation.mutateAsync({id: existingCompany.id, request: {name, adoClientId, isActive}})
+            return await companyEditMutation.mutateAsync({id: existingCompany.id, request: {name, adoClientId, isActive, isTrial}})
         }
-        return await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive});
+        return await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive, isTrial});
     }
 
     async function handleSubmit() {
@@ -48,10 +49,10 @@ export default function CompanyEdit({onSuccess, onCancel, company: existingCompa
             buttons={[
                 {
                     buttonModel: {
-                        content: "Add",
+                        content: existingCompany ? "Save" : "Add",
                         isPrimary: true,
                         iconCss: 'e-icons e-check',
-                        disabled: companyAddMutation.isLoading || !isValid                        
+                        disabled: companyAddMutation.isLoading || companyEditMutation.isLoading || !isValid                        
                     },
                     type: "submit",
                     click: handleSubmit
@@ -64,7 +65,14 @@ export default function CompanyEdit({onSuccess, onCancel, company: existingCompa
 
                 <TextBoxComponent type="number" placeholder="ADO Client ID" cssClass="e-outline" floatLabelType="Auto"
                     value={`${adoClientId ?? ""}`} input={({value}: InputEventArgs) => setAdoClientId(value ? parseInt(value) : undefined)} />
-                <CheckBoxComponent label="Active" labelPosition={"Before"} checked={isActive} change={({checked}) => setIsActive(checked)} />
+
+                <div className="checkboxes">
+                    <CheckBoxComponent label="Active" labelPosition={"Before"}
+                        checked={isActive} change={({checked}) => setIsActive(checked)} />
+                    <CheckBoxComponent label="Trial" labelPosition={"Before"}
+                        checked={isTrial} change={({checked}) => setIsTrial(checked)} />
+                </div>
+                
                 {companyAddErrorMessage &&
                     <div className="error" role="alert">
                         Problem adding company:<br />
