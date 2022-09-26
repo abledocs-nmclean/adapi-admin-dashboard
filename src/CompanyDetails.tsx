@@ -5,7 +5,7 @@ import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
 import { useErrorMessage, useSpinnerCallback } from "./util";
 import './CompanyDetails.css';
 
-type CompanyRouteParams = {id: string};
+export type CompanyRouteParams = {id: string};
 
 export default function CompanyDetails() {
     const { id } = useParams<CompanyRouteParams>();
