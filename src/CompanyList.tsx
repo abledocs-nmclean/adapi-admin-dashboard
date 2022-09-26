@@ -1,11 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useMemo, useState } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { GridComponent, ColumnDirective, ColumnsDirective,
     CommandColumn, CommandModel, CommandClickEventArgs,
     Inject, Sort, Resize} from '@syncfusion/ej2-react-grids';
 import { useCompaniesQuery } from "./queries";
-import { Company } from './model';
 import { useErrorMessage, useSpinnerCallback } from "./util";
+import { Company } from './model';
+import CompanyEdit from './CompanyEdit';
+import './CompanyList.css';
 
 // add id property to commands for reliable comparison
 type CommandWithId = CommandModel & {id: string};
@@ -18,7 +21,7 @@ export default function CompanyList() {
     const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
 
     const companiesQueryErrorMessage = useErrorMessage(companiesQuery.error);
-   
+  
     const [commands] = useState<CommandWithId[]>(() => [
         {
             id: "LOAD",
@@ -36,9 +39,25 @@ export default function CompanyList() {
         }
     }
 
+    function handleCompanyAddOpen(e: React.MouseEvent) {
+        navigate("add");
+    }
+
+    function handleCompanyAddSuccess(company: Company) {
+        navigate("..");
+    }
+
+    function handleCompanyAddCancel() {
+        navigate("..");
+    }
+
     return (
-        <div>
+        <div className="company-list">
+            <Routes>
+                <Route path="add" element={<CompanyEdit onSuccess={handleCompanyAddSuccess} onCancel={handleCompanyAddCancel} />} />
+            </Routes>
             <h1>Companies</h1>
+            <ButtonComponent className="add-button" iconCss="e-icons e-circle-add" onClick={handleCompanyAddOpen}>Add Company</ButtonComponent>
             <div ref={companiesSpinnerCallback}>
                 {companiesQueryErrorMessage &&
                     <div className="data-error" role="alert">

@@ -1,0 +1,20 @@
+.company-edit {
+    padding-top: 5px;
+}
+
+.company-edit .error {
+    background-color: #FF4444;
+    color: white;
+    margin-top: 1em;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+
+.company-edit .e-control-wrapper {
+    margin-bottom: 1em;
+}
+
+.company-edit .checkboxes {
+    display: flex;
+    column-gap: 1em;
+}

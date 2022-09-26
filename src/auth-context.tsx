@@ -5,7 +5,8 @@ import { ApiError, authorize } from './api';
 type AuthState = "None" | "LoggedIn" | "InvalidCredentials" | "Error" | "TokenExpired";
 
 type AuthContextModelBase = {
-    authState: AuthState
+    authState: AuthState,
+    error: unknown,
     user: AuthenticatedUser | null,
     login: (username: string, password: string) => Promise<void>,
     logout: () => void,
@@ -27,24 +28,26 @@ const AuthContext = createContext<AuthContextModel | null>(null);
 
 export function AuthProvider({children}: React.PropsWithChildren) {
     const [user, setUser] = useState(retrieveUser);
-
     const [authState, setAuthState] = useState<AuthState>(() => user ? "LoggedIn" : "None");
+    const [error, setError] = useState<unknown>(null);
 
     async function login(username: string, password: string) {
         let jwt: string | undefined;
         try {
             jwt = await authorize({username, password});
-        } catch (error) {
+        } catch (err) {
+            setError(err);
             if (authState === "LoggedIn") {
                 clearUser();
             }
-            setAuthState(error instanceof ApiError && error.response.status === 401 ? "InvalidCredentials" : "Error");
-            throw error;
+            setAuthState(err instanceof ApiError && err.response.status === 401 ? "InvalidCredentials" : "Error");
+            throw err;
         }
         const newUser: AuthenticatedUser = {username, jwt};
         storeUser(newUser);
         setUser(newUser);
         setAuthState("LoggedIn");
+        setError(null);
     }
 
     function clearUser() {
@@ -63,7 +66,7 @@ export function AuthProvider({children}: React.PropsWithChildren) {
     }
 
     return (
-        <AuthContext.Provider value={{authState, user, login, logout, expire} as AuthContextModel}>
+        <AuthContext.Provider value={{authState, error, user, login, logout, expire} as AuthContextModel}>
             {children}
         </AuthContext.Provider>
     )

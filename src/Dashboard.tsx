@@ -31,7 +31,7 @@ export default function Dashboard() {
         <div className="dashboard">
             User "{user.username}" logged in.
             <Routes>
-                <Route index element={<CompanyList />} />
+                <Route path="*" element={<CompanyList />} />
                 <Route path="company/:id" element={<CompanyDetails />} />
             </Routes>
         </div>
