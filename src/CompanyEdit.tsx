@@ -16,6 +16,7 @@ export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
     const [name, setName] = useState("");
     const [adoClientId, setAdoClientId] = useState<number>();
     const [isActive, setIsActive] = useState(true);
+    const [isTrial, setIsTrial] = useState(false);
 
     const isValid = useMemo(() => {
         return name.length > 0 && adoClientId !== undefined;
@@ -26,7 +27,7 @@ export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
     const companyAddErrorMessage = useErrorMessage(companyAddMutation.error);
 
     async function handleSubmit() {
-        const company = await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive});
+        const company = await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive, isTrial});
         if (onSuccess) onSuccess(company);
     }
 
@@ -55,7 +56,14 @@ export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
 
                 <TextBoxComponent type="number" placeholder="ADO Client ID" cssClass="e-outline" floatLabelType="Auto"
                     value={`${adoClientId ?? ""}`} input={({value}: InputEventArgs) => setAdoClientId(value ? parseInt(value) : undefined)} />
-                <CheckBoxComponent label="Active" labelPosition={"Before"} checked={isActive} change={({checked}) => setIsActive(checked)} />
+
+                <div className="checkboxes">
+                    <CheckBoxComponent label="Active" labelPosition={"Before"}
+                        checked={isActive} change={({checked}) => setIsActive(checked)} />
+                    <CheckBoxComponent label="Trial" labelPosition={"Before"}
+                        checked={isTrial} change={({checked}) => setIsTrial(checked)} />
+                </div>
+
                 {companyAddErrorMessage &&
                     <div className="error" role="alert">
                         Problem adding company:<br />

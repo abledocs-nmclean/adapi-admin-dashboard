@@ -13,3 +13,8 @@
 .company-edit .e-control-wrapper {
     margin-bottom: 1em;
 }
+
+.company-edit .checkboxes {
+    display: flex;
+    column-gap: 1em;
+}
