@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { AuthenticatedUser, retrieveUser, storeUser, clearUserStorage } from './user';
 import { ApiError, authorize } from './api';
 
