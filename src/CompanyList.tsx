@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { useNavigate, Routes, Route, useParams} from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { useNavigate, Routes, Route, useParams } from 'react-router-dom';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { GridComponent, ColumnDirective, ColumnsDirective,
     CommandColumn, CommandModel, CommandClickEventArgs,
@@ -19,6 +19,7 @@ export type DialogMode = "Add" | "Edit"
 export type CompanyListRouteParams = {id?: string};
 
 export default function CompanyList(params: CompanyListParams) {
+    // const location = useLocation();
     const navigate = useNavigate();
     const routeParams = useParams<CompanyListRouteParams>();
 
@@ -56,53 +57,46 @@ export default function CompanyList(params: CompanyListParams) {
         }
     }
 
-    // function handleCompanyAddOpen(e: React.MouseEvent) {
-    //     navigate("add");
-    // }
-
-    // function handleCompanyAddSuccess(company: Company) {
-    //     navigate("..");
-    // }
-
-    // function handleCompanyAddCancel() {
-    //     navigate("..");
-    // }
-
     function handleGridActionBegin(args: GridActionEventArgs) {
         console.log("Begin ", args);
+        if (args.requestType === "save") {
+          console.log("save");
+        }
     }
 
-    function handleGridActionComplete(args: GridActionEventArgs) {
+    const handleGridActionComplete = (args: GridActionEventArgs) => {
         console.log("Complete ", args.requestType, args);
         if (args.requestType === "refresh") {
-            if (params.dialog === "Add") {
-                // We are on the "add" route - open Add dialog on page load
-                gridRef.current!.addRecord();
-            } else if (params.dialog === "Edit") {
-                const rowIndex = gridRef.current!.getRowIndexByPrimaryKey(routeParams.id!);
-                gridRef.current!.selectRow(rowIndex);
-                gridRef.current!.startEdit();
-            }
+            // todo: manage /add and /edit urls
+            // if (params.dialog === "Add") {
+            //     gridRef.current!.addRecord();
+            // } else if (params.dialog === "Edit") {
+            //     const rowIndex = gridRef.current!.getRowIndexByPrimaryKey(routeParams.id!);
+            //     gridRef.current!.selectRow(rowIndex);
+            //     gridRef.current!.startEdit();
+            // }
         } else if (args.requestType === "add" || args.requestType === "beginEdit") {
             const editArgs = args as DialogEditEventArgs;
             const company = editArgs.rowData! as Company;
             editArgs.dialog!.header = args.requestType === "beginEdit" ? `${company.name}` : "Add Company";
-            if (args.requestType === "add") {
-                // Add dialog has opened
-                // If we are not on the "add" route already, navigate there
-                if (params.dialog !== "Add") {
-                    navigate("add");
-                }
-            } else {
-                // Edit dialog has opened
-                if (params.dialog !== "Edit") {
-                    navigate(`edit/${company.id}`);
-                }
-            }
+            // todo: add and edit urls - navigate() is not working as expected because current location can be out of date
+            // if (args.requestType === "add") {
+            //     if (params.dialog !== "Add") {
+            //         navigate("add");
+            //     }
+            // } else {
+            //     if (params.dialog !== "Edit") {
+            //         navigate(`edit/${company.id}`);
+            //     }
+            // }
         } else if (args.requestType === "save") {
-            navigate("..");
+            // if (params.dialog) {
+            //     navigate("..");
+            // }
         } else if (args.requestType === "cancel") {
-            navigate("..");
+            // if (params.dialog) {
+            //     navigate("..");
+            // }
         }
     }
 
@@ -120,12 +114,13 @@ export default function CompanyList(params: CompanyListParams) {
                         {companiesQueryErrorMessage}
                     </div>
                 }
+
                 <GridComponent dataSource={companiesQuery.data} commandClick={handleGridCommand} ref={gridRef}
                         enableStickyHeader={true}
                         allowSorting={true}
                         editSettings={{
-                            allowEditing: true, mode: "Dialog",
-                            // template: (props: {}) => (),
+                            allowEditing: true, mode: "Dialog", allowEditOnDblClick: false,
+                            template: (data?: Company) => (<CompanyEdit company={data} />),
                             allowAdding: true, allowDeleting: false
                         }}
                         actionBegin={handleGridActionBegin}
@@ -135,7 +130,6 @@ export default function CompanyList(params: CompanyListParams) {
                         <ColumnDirective field="id" isPrimaryKey={true} visible={false} />
                         <ColumnDirective headerText="Name" field="name" />
                         <ColumnDirective headerText="Active" textAlign={"Center"} autoFit={true} field="isActive" displayAsCheckBox={true} />
-                        <ColumnDirective headerText="ado id" field="adoClientId" editType="numericedit" />
                         <ColumnDirective headerText="Trial" textAlign={"Center"} autoFit={true} field="isTrial" displayAsCheckBox={true} />
                         <ColumnDirective /* autoFit={true} not working? */ width={150} commands={commands as CommandModel[]} />
                     </ColumnsDirective>

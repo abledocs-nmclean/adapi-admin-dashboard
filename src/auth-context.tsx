@@ -34,7 +34,7 @@ export function AuthProvider({children}: React.PropsWithChildren) {
     async function login(username: string, password: string) {
         let jwt: string | undefined;
         try {
-            jwt = await authorize({username, password});
+            jwt = await authorize({username, password, ttl: 60 * 60});
         } catch (err) {
             setError(err);
             if (authState === "LoggedIn") {
