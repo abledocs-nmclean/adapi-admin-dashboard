@@ -15,7 +15,7 @@ type MakeOptional<T, K extends keyof T> = Omit<T, K> & {[P in K]?: T[P]};
 
 export type CreateCompanyRequest = MakeOptional<Omit<Company, "id">, "adminUserIds" | "templates">;
 
-export type UpdateCompanyRequest = Partial<Omit<Company, "id">>;
+export type UpdateCompanyRequest = Partial<Omit<Company, "id" | "name">>;
 
 export type DocumentTemplate = {
     commonFileId: string,
