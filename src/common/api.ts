@@ -8,7 +8,7 @@ export class ApiError extends Error {
 
     constructor(response: Response) {
         super(response.statusText);
-        Object.setPrototypeOf(this, ApiError.prototype);
+        Object.setPrototypeOf(this, new.target.prototype);
         this.response = response;
     }
 }
