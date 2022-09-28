@@ -1,14 +1,19 @@
 import React, { useRef, useState } from "react";
 import { useParams } from "react-router";
-import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
+import {
+        GridComponent, ColumnDirective, ColumnsDirective, CommandModel, ToolbarItem,
+        Inject, Sort, Resize, CommandColumn, Edit, Toolbar,
+        GridActionEventArgs, SaveEventArgs, DialogEditEventArgs
+    } from '@syncfusion/ej2-react-grids';
 import { CheckBoxComponent, ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { DialogComponent } from '@syncfusion/ej2-react-popups';
 import {
         UpdateCompanyRequest, useCompanyEditMutation,
         useCompanyQuery, useUsersQuery, useComputedUsers,
+        User, CreateUserRequest, UpdateUserRequest, useUserAddMutation, useUserEditMutation,
         useErrorMessage, useSpinnerCallback
     } from "../common";
-import { CompanyEdit } from "../dialogs";
+import { CompanyEdit, UserEdit, EditModel } from "../dialogs";
 import './CompanyDetails.css';
 
 export type CompanyRouteParams = {id: string};
@@ -28,6 +33,8 @@ export default function CompanyDetails() {
     const usersQueryErrorMessage =  useErrorMessage(usersQuery.error);
 
     const companyEditMutation = useCompanyEditMutation();
+    const userAddMutation = useUserAddMutation();
+    const userEditMutation = useUserEditMutation();
 
     const [detailEditOpen, setDetailEditOpen] = useState(false);
 
@@ -37,6 +44,46 @@ export default function CompanyDetails() {
         const editModel = detailEditFormRef.current!.state;
         await companyEditMutation.mutateAsync(editModel as UpdateCompanyRequest);
         setDetailEditOpen(false);
+    }
+
+    const usersGridRef = useRef<GridComponent>(null);
+
+    const [userCommands] = useState<CommandModel[]>(() => [
+        {
+            type: "Edit",
+            buttonOption: {
+                iconCss: "e-icons e-edit",
+                cssClass: "e-flat"
+            }
+        }
+    ]);
+
+    function handleUserGridActionBegin(args: GridActionEventArgs) {
+        if (args.requestType === "save") {
+            const saveArgs = args as SaveEventArgs;
+            const editModel = saveArgs.data as EditModel<User>;
+            // const isValid = editModel.adoClientId !== undefined && editModel.name?.length;
+            // if (!isValid) {
+            //     args.cancel = true;
+            //     return;
+            // }
+
+            if (saveArgs.action === "add") {
+                saveArgs.cancel = true;
+                usersGridRef.current!.closeEdit();
+                userAddMutation.mutate(editModel as CreateUserRequest);
+            } else {
+                userEditMutation.mutate(editModel as UpdateUserRequest);
+            }
+        }
+    }
+
+    const handleUserGridActionComplete = (args: GridActionEventArgs) => {
+        if (args.requestType === "add" || args.requestType === "beginEdit") {
+            const editArgs = args as DialogEditEventArgs;
+            const user = editArgs.rowData! as User;
+            editArgs.dialog!.header = args.requestType === "beginEdit" ? `${user.username}` : "Add User";
+        }
     }
 
     return (
@@ -97,16 +144,27 @@ export default function CompanyDetails() {
                         {usersQueryErrorMessage}
                     </div>
                 }
-                <GridComponent dataSource={users} allowSorting={true}>
+                <GridComponent ref={usersGridRef} dataSource={users}
+                        enableStickyHeader={true}
+                        allowSorting={true}
+                        editSettings={{
+                            allowEditing: true, allowEditOnDblClick: false,
+                            allowAdding: true, allowDeleting: false,
+                            mode: "Dialog", template: UserEdit
+                        }}
+                        toolbar={[ToolbarItem.Add]}
+                        actionBegin={handleUserGridActionBegin}
+                        actionComplete={handleUserGridActionComplete}>
                     <ColumnsDirective>
+                        <ColumnDirective field="id" isPrimaryKey={true} visible={false} />
                         <ColumnDirective headerText="Username" field="username" />
                         <ColumnDirective headerText="Email" field="email" />
                         <ColumnDirective headerText="Trial" autoFit={true} textAlign={"Center"} field="isTrial" displayAsCheckBox={true} />
                         <ColumnDirective headerText="Active" autoFit={true} textAlign={"Center"} field="isActive" displayAsCheckBox={true} />
                         <ColumnDirective headerText="Admin" autoFit={true} textAlign={"Center"} field="isAdmin" displayAsCheckBox={true} />
-                        {/* <ColumnDirective field="id" /> */}
+                        <ColumnDirective /* autoFit={true} not working? */ width={150} commands={userCommands} />
                     </ColumnsDirective>
-                    <Inject services={[Sort, Resize]} />
+                    <Inject services={[Sort, Resize, CommandColumn, Edit, Toolbar]} />
                 </GridComponent>
             </div>
 
