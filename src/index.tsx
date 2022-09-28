@@ -4,9 +4,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { registerLicense, enableRipple } from '@syncfusion/ej2-base'
 import reportWebVitals from './reportWebVitals';
+import './index.css';
 import { AuthProvider, Dashboard } from './common';
 import Login from './login';
-import './index.css';
 
 const license = process.env.REACT_APP_SYNCFUSION_LICENSE;
 if (license !== undefined) {
