@@ -10,7 +10,7 @@ import {
         Company, CreateCompanyRequest, UpdateCompanyRequest,
         useCompaniesQuery, useCompanyAddMutation, useCompanyEditMutation, useErrorMessage, useSpinnerCallback
     } from "../common";
-import CompanyEdit, { CompanyEditModel } from '../dialogs/CompanyEdit';
+import { CompanyEdit, EditModel } from '../dialogs';
 import './CompanyList.css';
 
 // add custom command types to command model
@@ -68,8 +68,8 @@ export default function CompanyList(params: CompanyListParams) {
     function handleGridActionBegin(args: GridActionEventArgs) {
         if (args.requestType === "save") {
             const saveArgs = args as SaveEventArgs;
-            const editModel = saveArgs.data as CompanyEditModel;
-            const isValid = editModel.adoClientId && editModel.name?.length;
+            const editModel = saveArgs.data as EditModel<Company>;
+            const isValid = editModel.adoClientId !== undefined && editModel.name?.length;
             if (!isValid) {
                 args.cancel = true;
                 return;

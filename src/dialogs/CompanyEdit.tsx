@@ -2,17 +2,15 @@ import React from "react";
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent, InputEventArgs } from '@syncfusion/ej2-react-inputs';
 import { Company } from "../common";
+import { EditForm, EditModel } from  "./common";
 import './CompanyEdit.css'
 
-export type CompanyEditModel = Partial<Company> & {isAdd?: boolean};
-
-export default class CompanyEdit extends React.Component<CompanyEditModel, CompanyEditModel> {
-    constructor(props: CompanyEditModel) {
-        super(props);
-        this.state = {...props, isActive: props.isActive ?? true};
+export default class CompanyEdit extends EditForm<Company> {
+    constructor(props: EditModel<Company>) {
+        super(props, {isActive: true, adoClientId: 0});
     }
 
-    public render() {
+    override render() {
         return (
             <div className="company-edit">
                 <TextBoxComponent placeholder="Name" cssClass="e-outline" floatLabelType="Auto"
