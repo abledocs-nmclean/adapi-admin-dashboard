@@ -1,76 +1,40 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent, InputEventArgs } from '@syncfusion/ej2-react-inputs';
-import { DialogComponent } from '@syncfusion/ej2-react-popups';
-import { useCompanyAddMutation } from "./queries";
 import { Company } from "./model";
-import { useErrorMessage } from "./util";
 import './CompanyEdit.css'
 
-type CompanyEditProps = {
-    onSuccess?: (company: Company) => void;
-    onCancel?: () => void
-};
+export type CompanyEditModel = Partial<Company> & {isAdd?: boolean};
 
-export default function CompanyEdit({onSuccess, onCancel}: CompanyEditProps) {
-    const [name, setName] = useState("");
-    const [adoClientId, setAdoClientId] = useState<number>();
-    const [isActive, setIsActive] = useState(true);
-    const [isTrial, setIsTrial] = useState(false);
-
-    const isValid = useMemo(() => {
-        return name.length > 0 && adoClientId !== undefined;
-    }, [name, adoClientId, isActive]);
-
-    const companyAddMutation = useCompanyAddMutation();
-
-    const companyAddErrorMessage = useErrorMessage(companyAddMutation.error);
-
-    async function handleSubmit() {
-        const company = await companyAddMutation.mutateAsync({name, adoClientId: adoClientId!, isActive, isTrial});
-        if (onSuccess) onSuccess(company);
+export default class CompanyEdit extends React.Component<CompanyEditModel, CompanyEditModel> {
+    constructor(props: CompanyEditModel) {
+        super(props);
+        this.state = {...props, isActive: props.isActive ?? true, adoClientId: props.adoClientId ?? 0};
     }
 
-    function handleClose(e: {cancel: boolean}) {
-        if (onCancel) onCancel();
-    }
-
-    return (
-        <DialogComponent header="Add Company" isModal={true} width={500} showCloseIcon={true} close={handleClose}
-            buttons={[
-                {
-                    buttonModel: {
-                        content: "Add",
-                        isPrimary: true,
-                        iconCss: 'e-icons e-check',
-                        disabled: companyAddMutation.isLoading || !isValid
-                    },
-                    type: "submit",
-                    click: handleSubmit
-                }
-            ]}
-        >
-            <form className="company-edit">
+    public render() {
+        return (
+            <div className="company-edit">
                 <TextBoxComponent placeholder="Name" cssClass="e-outline" floatLabelType="Auto"
-                    value={name} input={({value}) => setName(value)} />
+                    disabled={!this.state.isAdd}
+                    name="name" value={this.state.name}
+                    input={({value}: InputEventArgs) => this.setState({name: value})} />
 
                 <TextBoxComponent type="number" placeholder="ADO Client ID" cssClass="e-outline" floatLabelType="Auto"
-                    value={`${adoClientId ?? ""}`} input={({value}: InputEventArgs) => setAdoClientId(value ? parseInt(value) : undefined)} />
+                    name="adoClientId" value={`${this.state.adoClientId ?? ""}`}
+                    input={({value}: InputEventArgs) => this.setState({adoClientId: value ? parseInt(value) : undefined})} />
 
                 <div className="checkboxes">
                     <CheckBoxComponent label="Active" labelPosition={"Before"}
-                        checked={isActive} change={({checked}) => setIsActive(checked)} />
+                        name="isActive" checked={this.state.isActive}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            this.setState({isActive: e.currentTarget.checked})} />
                     <CheckBoxComponent label="Trial" labelPosition={"Before"}
-                        checked={isTrial} change={({checked}) => setIsTrial(checked)} />
+                        name="isTrial" checked={this.state.isTrial}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            this.setState({isTrial: e.currentTarget.checked})} />
                 </div>
-
-                {companyAddErrorMessage &&
-                    <div className="error" role="alert">
-                        Problem adding company:<br />
-                        {companyAddErrorMessage}
-                    </div>
-                }
-            </form>
-        </DialogComponent>
-    );
+            </div>
+        );
+    }
 }

@@ -1,9 +1,9 @@
 import { useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { addCompany, getAllCompanies, getCompany, getUsersByCompany } from "./api";
+import { addCompany, editCompany, getAllCompanies, getCompany, getUsersByCompany } from "./api";
 import { useAuthContext } from "./auth-context";
 import { ApiError } from './api';
-import { Company, CreateCompanyRequest, User } from "./model";
+import { Company, CreateCompanyRequest, UpdateCompanyRequest, User } from "./model";
 
 // React hook that updates the auth state when we detect authorization has expired from an error response
 export function useTokenExpiryEffect(error: unknown) {
@@ -82,6 +82,28 @@ export function useCompanyAddMutation() {
     return mutation;
 }
 
+export function useCompanyEditMutation() {
+    const queryClient = useQueryClient();
+    const { user } = useAuthContext();
+
+    const mutation = useMutation(
+        ({id, request}: {id: string, request: UpdateCompanyRequest}) => editCompany(user!, id, request),
+        {
+            onSuccess: (company) => {
+                queryClient.setQueryData<Company>(["company", user, company.id], company);
+
+                queryClient.setQueryData<Company[]>(["companies", user], (existingCompanies) => {
+                    return existingCompanies?.map(c => c.id === company.id ? company : c);
+                })
+            }
+        }
+    );
+
+    useTokenExpiryEffect(mutation.error);
+
+    return mutation;
+}
+
 export function useUsersQuery(id: string | undefined) {
     const { user } = useAuthContext();
 
@@ -107,8 +129,8 @@ export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin
     const usersQuery = useUsersQuery(id);
 
     return useMemo(() => {
-        if (usersQuery.isSuccess) {
-            if (companyQuery.isSuccess) {
+        if (usersQuery.data) {
+            if (companyQuery.data?.adminUserIds) {
                 // when the company data is available, use "adminUserIds" to populate each user's "isAdmin"
                 return usersQuery.data.map((userData) => {
                     return {
@@ -120,5 +142,5 @@ export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin
             // when only user data is available, use the original data
             return usersQuery.data;
         }
-    }, [companyQuery.isSuccess, companyQuery.data?.adminUserIds, usersQuery.isSuccess, usersQuery.data]);
+    }, [companyQuery.data?.adminUserIds, usersQuery.data]);
 }

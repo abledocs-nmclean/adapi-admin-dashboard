@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
+import { ProgressButtonComponent } from '@syncfusion/ej2-react-splitbuttons';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { LocationState } from './location';
 import { useAuthContext } from './auth-context';
@@ -28,6 +28,13 @@ export default function Login() {
     const { login, authState, error } = useAuthContext();
 
     const errorMessage = useErrorMessage(error);
+
+    const loginButtonRef = useRef<ProgressButtonComponent>(null);
+    useLayoutEffect(() => {
+        if (!isLoading) {
+            loginButtonRef.current?.progressComplete();
+        }
+    }, [isLoading]);
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -57,7 +64,11 @@ export default function Login() {
                     value={username} input={({value}) => setUsername(value)} />
                 <TextBoxComponent type="password" placeholder="Password" cssClass="e-outline" floatLabelType="Auto"
                     value={password} input={({value}) => setPassword(value)} />
-                <ButtonComponent type="submit" disabled={isLoading || !isValid} isPrimary={true} cssClass="e-block">Login</ButtonComponent>
+                <ProgressButtonComponent ref={loginButtonRef} duration={30000}
+                        type="submit" disabled={isLoading || !isValid} isPrimary={true}
+                        cssClass="e-block" spinSettings={{position: "Left"}}>
+                    Login
+                </ProgressButtonComponent>
                 {authState === "InvalidCredentials" ?
                     <div className="error" role="alert">
                         Username or password is incorrect.
