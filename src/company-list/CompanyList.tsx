@@ -14,7 +14,7 @@ import { CompanyEdit, EditModel } from '../dialogs';
 import './CompanyList.css';
 
 // add custom command types to command model
-type CustomCommandModel = CommandModel | {type: "Load"};
+type CustomCommandModel = Omit<CommandModel, "type"> & {type?: CommandModel["type"] | "Load"};
 
 export type CompanyListParams = {dialog?: DialogMode};
 export type DialogMode = "Add" | "Edit"
