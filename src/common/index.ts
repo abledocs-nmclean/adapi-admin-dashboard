@@ -9,4 +9,4 @@ export {
         useCompaniesQuery, useCompanyAddMutation, useCompanyEditMutation, useCompanyQuery,
         useUsersQuery, useComputedUsers
     } from "./queries";
-export {useSpinnerCallback, useErrorMessage } from "./util";
+export { filterUndefined, useSpinnerCallback, useErrorMessage } from "./util";

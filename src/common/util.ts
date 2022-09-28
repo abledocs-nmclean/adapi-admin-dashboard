@@ -2,6 +2,10 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
 import { ApiError } from "./api";
 
+export function filterUndefined<T extends {}>(object: T): T {
+    return Object.fromEntries(Object.entries(object).filter(([k, v]) => v !== undefined)) as T;
+}
+
 // returns a callback that sets up an HTML element to be the target for a spinner, and toggles the spinner
 export function useSpinnerCallback(shouldShowSpinner: boolean) {
     // tracks whether this HTML element has already been initialized with a spinner
