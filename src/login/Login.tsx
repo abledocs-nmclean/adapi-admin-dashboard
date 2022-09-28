@@ -57,6 +57,7 @@ export default function Login() {
                         Session has expired. Please log in again.
                     </div>
                 }
+
                 <h1>Login</h1>
                 <TextBoxComponent placeholder="Username" cssClass="e-outline" floatLabelType="Auto"
                     value={username} input={({value}) => setUsername(value)} />
@@ -67,6 +68,7 @@ export default function Login() {
                         cssClass="e-block" spinSettings={{position: "Left"}}>
                     Login
                 </ProgressButtonComponent>
+
                 {authState === "InvalidCredentials" ?
                     <div className="error" role="alert">
                         Username or password is incorrect.

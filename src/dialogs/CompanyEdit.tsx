@@ -25,12 +25,10 @@ export default class CompanyEdit extends EditForm<Company> {
                 <div className="checkboxes">
                     <CheckBoxComponent label="Active" labelPosition={"Before"}
                         name="isActive" checked={this.state.isActive}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            this.setState({isActive: e.currentTarget.checked})} />
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({isActive: e.target.checked})} />
                     <CheckBoxComponent label="Trial" labelPosition={"Before"}
                         name="isTrial" checked={this.state.isTrial}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            this.setState({isTrial: e.currentTarget.checked})} />
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => this.setState({isTrial: e.target.checked})} />
                 </div>
             </div>
         );

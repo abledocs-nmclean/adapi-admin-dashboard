@@ -1,9 +1,14 @@
+import React, { useRef, useState } from "react";
 import { useParams } from "react-router";
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
-import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
+import { CheckBoxComponent, ButtonComponent } from '@syncfusion/ej2-react-buttons';
+import { DialogComponent } from '@syncfusion/ej2-react-popups';
 import {
-        useCompanyQuery, useUsersQuery, useComputedUsers, useErrorMessage, useSpinnerCallback
+        UpdateCompanyRequest, useCompanyEditMutation,
+        useCompanyQuery, useUsersQuery, useComputedUsers,
+        useErrorMessage, useSpinnerCallback
     } from "../common";
+import { CompanyEdit } from "../dialogs";
 import './CompanyDetails.css';
 
 export type CompanyRouteParams = {id: string};
@@ -22,6 +27,18 @@ export default function CompanyDetails() {
     const companyQueryErrorMessage = useErrorMessage(companyQuery.error);
     const usersQueryErrorMessage =  useErrorMessage(usersQuery.error);
 
+    const companyEditMutation = useCompanyEditMutation();
+
+    const [detailEditOpen, setDetailEditOpen] = useState(false);
+
+    const detailEditFormRef = useRef<CompanyEdit>(null);
+
+    async function handleDetailSave() {
+        const editModel = detailEditFormRef.current!.state;
+        await companyEditMutation.mutateAsync({id: editModel.id!, request: editModel as UpdateCompanyRequest});
+        setDetailEditOpen(false);
+    }
+
     return (
         <div className="company-details">
             <h1>Company Details</h1>
@@ -32,22 +49,44 @@ export default function CompanyDetails() {
                 </div>
             }
             {companyQuery.isSuccess &&
-                <dl>
-                    <dt>ID</dt>
-                    <dd>{companyQuery.data.id}</dd>
+                <div>
+                    <dl>
+                        <dt>ID</dt>
+                        <dd>{companyQuery.data.id}</dd>
 
-                    <dt>Name</dt>
-                    <dd>{companyQuery.data.name}</dd>
+                        <dt>Name</dt>
+                        <dd>{companyQuery.data.name}</dd>
 
-                    <dt>Trial</dt>
-                    <dd><CheckBoxComponent checked={companyQuery.data.isTrial} disabled={true} /></dd>
+                        <dt>Trial</dt>
+                        <dd><CheckBoxComponent checked={companyQuery.data.isTrial} disabled={true} /></dd>
 
-                    <dt>Active</dt>
-                    <dd><CheckBoxComponent checked={companyQuery.data.isActive} disabled={true} /></dd>
+                        <dt>Active</dt>
+                        <dd><CheckBoxComponent checked={companyQuery.data.isActive} disabled={true} /></dd>
 
-                    <dt>ADO Client ID</dt>
-                    <dd>{companyQuery.data.adoClientId}</dd>
-                </dl>
+                        <dt>ADO Client ID</dt>
+                        <dd>{companyQuery.data.adoClientId}</dd>
+                    </dl>
+
+                    <ButtonComponent onClick={() => setDetailEditOpen(true)}>Edit Details</ButtonComponent>
+                    {detailEditOpen &&
+                        <DialogComponent header="Edit Details" isModal={true} width={500}
+                                showCloseIcon={true} close={() => setDetailEditOpen(false)}
+                                buttons={[
+                                    {
+                                        buttonModel: {
+                                            content: "Save",
+                                            isPrimary: true,
+                                            iconCss: "e-icons e-check",
+                                            disabled: companyEditMutation.isLoading
+                                        },
+                                        type: "submit",
+                                        click: handleDetailSave
+                                    }
+                                ]}>
+                            <CompanyEdit ref={detailEditFormRef} {...companyQuery.data} />
+                        </DialogComponent>
+                    }
+                </div>
             }
             
             <h2>Users</h2>

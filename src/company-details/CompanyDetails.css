@@ -5,6 +5,6 @@
     font-weight: bold;
 }
 
-.company-details dd {
+.company-details dd:not(:last-of-type) {
     padding-bottom: 1em;
 }
