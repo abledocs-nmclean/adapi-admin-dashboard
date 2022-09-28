@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent, InputEventArgs } from '@syncfusion/ej2-react-inputs';
-import { Company } from "./model";
+import { Company } from "../common";
 import './CompanyEdit.css'
 
 export type CompanyEditModel = Partial<Company> & {isAdd?: boolean};

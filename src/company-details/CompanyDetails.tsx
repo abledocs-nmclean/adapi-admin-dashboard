@@ -1,8 +1,9 @@
 import { useParams } from "react-router";
 import { GridComponent, ColumnDirective, ColumnsDirective, Inject, Sort, Resize } from '@syncfusion/ej2-react-grids';
 import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
-import { useCompanyQuery, useUsersQuery, useComputedUsers } from "./queries";
-import { useErrorMessage, useSpinnerCallback } from "./util";
+import {
+        useCompanyQuery, useUsersQuery, useComputedUsers, useErrorMessage, useSpinnerCallback
+    } from "../common";
 import './CompanyDetails.css';
 
 export type CompanyRouteParams = {id: string};

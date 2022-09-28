@@ -2,9 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useLayoutEffect } from 're
 import { useLocation, useNavigate } from "react-router-dom";
 import { ProgressButtonComponent } from '@syncfusion/ej2-react-splitbuttons';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
-import { LocationState } from './location';
-import { useAuthContext } from './auth-context';
-import { useErrorMessage } from './util';
+import { LocationState, useAuthContext, useErrorMessage } from "../common";
 import './Login.css';
 
 export default function Login() {

@@ -2,13 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { enableRipple } from '@syncfusion/ej2-base';
-import './index.css';
-import Login from './Login';
-import Dashboard from './Dashboard';
+import { registerLicense, enableRipple } from '@syncfusion/ej2-base'
 import reportWebVitals from './reportWebVitals';
-import { registerLicense } from '@syncfusion/ej2-base'
-import { AuthProvider } from './auth-context';
+import { AuthProvider, Dashboard } from './common';
+import Login from './login';
+import './index.css';
 
 const license = process.env.REACT_APP_SYNCFUSION_LICENSE;
 if (license !== undefined) {

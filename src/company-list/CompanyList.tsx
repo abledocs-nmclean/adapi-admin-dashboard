@@ -1,13 +1,16 @@
 import { useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { GridComponent, ColumnDirective, ColumnsDirective,
-    CommandColumn, CommandModel, CommandClickEventArgs,
-    Inject, Sort, Resize, Edit, Toolbar, ToolbarItem,
-    GridActionEventArgs, SaveEventArgs, DialogEditEventArgs } from '@syncfusion/ej2-react-grids';
-import { useCompaniesQuery, useCompanyAddMutation, useCompanyEditMutation } from "./queries";
-import { useErrorMessage, useSpinnerCallback } from "./util";
-import { Company, CreateCompanyRequest, UpdateCompanyRequest } from './model';
-import CompanyEdit, { CompanyEditModel } from './CompanyEdit';
+import {
+        GridComponent, ColumnDirective, ColumnsDirective,
+        CommandColumn, CommandModel, CommandClickEventArgs,
+        Inject, Sort, Resize, Edit, Toolbar, ToolbarItem,
+        GridActionEventArgs, SaveEventArgs, DialogEditEventArgs
+    } from '@syncfusion/ej2-react-grids';
+import {
+        Company, CreateCompanyRequest, UpdateCompanyRequest,
+        useCompaniesQuery, useCompanyAddMutation, useCompanyEditMutation, useErrorMessage, useSpinnerCallback
+    } from "../common";
+import CompanyEdit, { CompanyEditModel } from '../dialogs/CompanyEdit';
 import './CompanyList.css';
 
 // add custom command types to command model

@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './auth-context';
 import { LocationState } from './location';
-import CompanyList from './CompanyList';
-import CompanyDetails from './CompanyDetails';
+import CompanyList from '../company-list';
+import CompanyDetails from '../company-details';
 import './Dashboard.css';
 
 export default function Dashboard() {
