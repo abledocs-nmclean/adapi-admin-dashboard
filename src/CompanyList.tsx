@@ -66,7 +66,7 @@ export default function CompanyList(params: CompanyListParams) {
         if (args.requestType === "save") {
             const saveArgs = args as SaveEventArgs;
             const editModel = saveArgs.data as CompanyEditModel;
-            const isValid = editModel.adoClientId && editModel.name?.length;
+            const isValid = editModel.adoClientId !== undefined && editModel.name?.length;
             if (!isValid) {
                 args.cancel = true;
                 return;

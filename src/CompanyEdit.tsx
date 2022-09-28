@@ -9,7 +9,7 @@ export type CompanyEditModel = Partial<Company> & {isAdd?: boolean};
 export default class CompanyEdit extends React.Component<CompanyEditModel, CompanyEditModel> {
     constructor(props: CompanyEditModel) {
         super(props);
-        this.state = {...props, isActive: props.isActive ?? true};
+        this.state = {...props, isActive: props.isActive ?? true, adoClientId: props.adoClientId ?? 0};
     }
 
     public render() {
