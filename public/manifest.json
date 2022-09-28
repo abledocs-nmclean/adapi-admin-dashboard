@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "ADapi Admin Dashboard",
+  "name": "ADapi internal system administration dashboard web application",
   "icons": [
     {
       "src": "favicon.ico",
