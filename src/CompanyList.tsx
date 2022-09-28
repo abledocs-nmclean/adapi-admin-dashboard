@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
-import { useNavigate, Routes, Route, useParams } from 'react-router-dom';
-import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
+import { useNavigate, useParams } from 'react-router-dom';
 import { GridComponent, ColumnDirective, ColumnsDirective,
     CommandColumn, CommandModel, CommandClickEventArgs,
-    Inject, Sort, Resize, Edit, Toolbar, ToolbarItem, DialogEditEventArgs, GridActionEventArgs} from '@syncfusion/ej2-react-grids';
-import { useCompaniesQuery } from "./queries";
+    Inject, Sort, Resize, Edit, Toolbar, ToolbarItem,
+    GridActionEventArgs, SaveEventArgs, DialogEditEventArgs } from '@syncfusion/ej2-react-grids';
+import { useCompaniesQuery, useCompanyAddMutation, useCompanyEditMutation } from "./queries";
 import { useErrorMessage, useSpinnerCallback } from "./util";
-import { Company } from './model';
-import CompanyEdit from './CompanyEdit';
+import { Company, CreateCompanyRequest, UpdateCompanyRequest } from './model';
+import CompanyEdit, { CompanyEditModel } from './CompanyEdit';
 import './CompanyList.css';
 
 // add custom command types to command model
@@ -19,15 +19,15 @@ export type DialogMode = "Add" | "Edit"
 export type CompanyListRouteParams = {id?: string};
 
 export default function CompanyList(params: CompanyListParams) {
-    // const location = useLocation();
     const navigate = useNavigate();
     const routeParams = useParams<CompanyListRouteParams>();
 
     const companiesQuery = useCompaniesQuery();
-
     const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
-
     const companiesQueryErrorMessage = useErrorMessage(companiesQuery.error);
+
+    const companyAddMutation = useCompanyAddMutation();
+    const companyEditMutation = useCompanyEditMutation();
   
     const [commands] = useState<CustomCommandModel[]>(() => [
         {
@@ -58,16 +58,34 @@ export default function CompanyList(params: CompanyListParams) {
     }
 
     function handleGridActionBegin(args: GridActionEventArgs) {
-        console.log("Begin ", args);
         if (args.requestType === "save") {
-          console.log("save");
+            const saveArgs = args as SaveEventArgs;
+            const editModel = saveArgs.data as CompanyEditModel;
+            const isValid = editModel.adoClientId && editModel.name?.length;
+            if (!isValid) {
+                args.cancel = true;
+                return;
+            }
+
+            if (saveArgs.action === "add") {
+                // On adding, we close the edit dialog and cancel the event here, to prevent the grid from adding
+                // a record locally. The data source will update automatically after the new company record is
+                // returned from the server. If we don't cancel here, we would end up with a duplicate grid item
+                // for the new record. The local record would also be missing the ID returned from the server.
+                saveArgs.cancel = true;
+                gridRef.current!.closeEdit();
+                companyAddMutation.mutate(editModel as CreateCompanyRequest);
+            } else {
+                // After edit, the grid row will be updated locally immediately. After the update response is returned
+                // from the server, the data will refresh (however it should be the identical to the local update).
+                companyEditMutation.mutate({id: editModel.id!, request: editModel as UpdateCompanyRequest});
+            }
         }
     }
 
     const handleGridActionComplete = (args: GridActionEventArgs) => {
-        console.log("Complete ", args.requestType, args);
         if (args.requestType === "refresh") {
-            // todo: manage /add and /edit urls
+            // todo: load /add and /edit urls
             // if (params.dialog === "Add") {
             //     gridRef.current!.addRecord();
             // } else if (params.dialog === "Edit") {
@@ -106,7 +124,6 @@ export default function CompanyList(params: CompanyListParams) {
                 <Route path="add" element={<CompanyEdit onSuccess={handleCompanyAddSuccess} onCancel={handleCompanyAddCancel} />} />
             </Routes> */}
             <h1>Companies</h1>
-            {/* <ButtonComponent className="add-button" iconCss="e-icons e-circle-add" onClick={handleCompanyAddOpen}>Add Company</ButtonComponent> */}
             <div ref={companiesSpinnerCallback}>
                 {companiesQueryErrorMessage &&
                     <div className="data-error" role="alert">
@@ -115,17 +132,18 @@ export default function CompanyList(params: CompanyListParams) {
                     </div>
                 }
 
-                <GridComponent dataSource={companiesQuery.data} commandClick={handleGridCommand} ref={gridRef}
+                <GridComponent ref={gridRef} dataSource={companiesQuery.data}
                         enableStickyHeader={true}
                         allowSorting={true}
                         editSettings={{
-                            allowEditing: true, mode: "Dialog", allowEditOnDblClick: false,
-                            template: (data?: Company) => (<CompanyEdit company={data} />),
-                            allowAdding: true, allowDeleting: false
+                            allowEditing: true, allowEditOnDblClick: false,
+                            allowAdding: true, allowDeleting: false,
+                            mode: "Dialog", template: CompanyEdit
                         }}
+                        toolbar={[ToolbarItem.Add]}
+                        commandClick={handleGridCommand}
                         actionBegin={handleGridActionBegin}
-                        actionComplete={handleGridActionComplete}
-                        toolbar={[ToolbarItem.Add]}>
+                        actionComplete={handleGridActionComplete}>
                     <ColumnsDirective>
                         <ColumnDirective field="id" isPrimaryKey={true} visible={false} />
                         <ColumnDirective headerText="Name" field="name" />
