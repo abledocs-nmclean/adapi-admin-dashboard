@@ -23,11 +23,16 @@ export default function CompanyList(params: CompanyListParams) {
     const routeParams = useParams<CompanyListRouteParams>();
 
     const companiesQuery = useCompaniesQuery();
-    const companiesSpinnerCallback = useSpinnerCallback(companiesQuery.isLoading);
-    const companiesQueryErrorMessage = useErrorMessage(companiesQuery.error);
 
     const companyAddMutation = useCompanyAddMutation();
     const companyEditMutation = useCompanyEditMutation();
+
+    const companiesQueryErrorMessage = useErrorMessage(companiesQuery.error);
+    const companyAddErrorMessage = useErrorMessage(companyAddMutation.error);
+    const companyEditErrorMessage = useErrorMessage(companyEditMutation.error);
+
+    const companiesSpinnerCallback = useSpinnerCallback(
+        companiesQuery.isLoading || companyAddMutation.isLoading || companyEditMutation.isLoading);
   
     const [commands] = useState<CustomCommandModel[]>(() => [
         {
@@ -129,6 +134,17 @@ export default function CompanyList(params: CompanyListParams) {
                     <div className="data-error" role="alert">
                         Problem loading company list:<br />
                         {companiesQueryErrorMessage}
+                    </div>}
+                {companyAddErrorMessage &&
+                    <div className="data-error" role="alert">
+                        Problem adding company:<br />
+                        {companyAddErrorMessage}
+                    </div>
+                }
+                {companyEditErrorMessage &&
+                    <div className="data-error" role="alert">
+                        Problem editing company:<br />
+                        {companyEditErrorMessage}
                     </div>
                 }
 
