@@ -1,4 +1,8 @@
-export type AuthorizeRequest = {username: string, password: string, ttl?: number};
+export type AuthorizeRequest = {
+    username: string,
+    password: string,
+    ttl?: number
+};
 
 export type Company = {
     id: string, 
@@ -15,7 +19,7 @@ type MakeOptional<T, K extends keyof T> = Omit<T, K> & {[P in K]?: T[P]};
 
 export type CreateCompanyRequest = MakeOptional<Omit<Company, "id">, "adminUserIds" | "templates">;
 
-export type UpdateCompanyRequest = Partial<Omit<Company, "id" | "name">>;
+export type UpdateCompanyRequest = Pick<Company, "id"> & Partial<Omit<Company, "name">>;
 
 export type DocumentTemplate = {
     commonFileId: string,
@@ -27,13 +31,17 @@ export type DocumentTemplate = {
 
 export type User = {
     id: string,
-    username: string,
-    accessKey: string,
     companyId: string,
+    username: string,
+    password: string,
+    secondaryPassword: string,
+    accessKey: string,
+    passwordChangeRequired?: boolean,
     isActive: boolean,
-    partitionKey: string,
-    callbackUrlRemediation?: string,
-    callbackUrlConformanceScan?: string,
     email?: string,
     isTrial?: boolean
 };
+
+export type CreateUserRequest = Omit<User, "id" | "passwordChangeRequired">;
+
+export type UpdateUserRequest = Pick<User, "id" | "companyId"> & Partial<User>;

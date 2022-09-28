@@ -35,7 +35,7 @@ export default function CompanyDetails() {
 
     async function handleDetailSave() {
         const editModel = detailEditFormRef.current!.state;
-        await companyEditMutation.mutateAsync({id: editModel.id!, request: editModel as UpdateCompanyRequest});
+        await companyEditMutation.mutateAsync(editModel as UpdateCompanyRequest);
         setDetailEditOpen(false);
     }
 
@@ -88,7 +88,7 @@ export default function CompanyDetails() {
                     }
                 </div>
             }
-            
+
             <h2>Users</h2>
             <div ref={usersSpinnerCallback}>
                 {usersQueryErrorMessage &&

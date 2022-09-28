@@ -36,7 +36,7 @@ export default function CompanyList(params: CompanyListParams) {
 
     const companiesSpinnerCallback = useSpinnerCallback(
         companiesQuery.isLoading || companyAddMutation.isLoading || companyEditMutation.isLoading);
-  
+
     const [commands] = useState<CustomCommandModel[]>(() => [
         {
             type: "Edit",
@@ -86,7 +86,7 @@ export default function CompanyList(params: CompanyListParams) {
             } else {
                 // After edit, the grid row will be updated locally immediately. After the update response is returned
                 // from the server, the data will refresh (however it should be the identical to the local update).
-                companyEditMutation.mutate({id: editModel.id!, request: editModel as UpdateCompanyRequest});
+                companyEditMutation.mutate(editModel as UpdateCompanyRequest);
             }
         }
     }

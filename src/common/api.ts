@@ -1,4 +1,7 @@
-import { AuthorizeRequest, Company, User, CreateCompanyRequest, UpdateCompanyRequest } from './model';
+import {
+        AuthorizeRequest, Company, CreateCompanyRequest, UpdateCompanyRequest,
+        User, CreateUserRequest, UpdateUserRequest
+    } from './model';
 import { AuthenticatedUser } from './user';
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH";
@@ -38,27 +41,37 @@ export async function authorize(request: AuthorizeRequest) {
     return jwt;
 }
 
-export async function getAllCompanies(user: AuthenticatedUser) {
-    const response = await sendJsonAuth(user, "companies", "GET");
+export async function getAllCompanies(authUser: AuthenticatedUser) {
+    const response = await sendJsonAuth(authUser, "companies", "GET");
     return await response.json() as Company[];
 }
 
-export async function getCompany(user: AuthenticatedUser, id: string) {
-    const response = await sendJsonAuth(user, `companies/${id}`, "GET");
+export async function getCompany(authUser: AuthenticatedUser, companyId: string) {
+    const response = await sendJsonAuth(authUser, `companies/${companyId}`, "GET");
     return await response.json() as Company;
 }
 
-export async function getUsersByCompany(user: AuthenticatedUser, id: string) {
-    const response = await sendJsonAuth(user, `companies/${id}/users`, "GET");
+export async function addCompany(authUser: AuthenticatedUser, request: CreateCompanyRequest) {
+    const response = await sendJsonAuth(authUser, "companies", "POST", request);
+    return await response.json() as Company;
+}
+
+export async function editCompany(authUser: AuthenticatedUser, request: UpdateCompanyRequest) {
+    const response = await sendJsonAuth(authUser, `companies/${request.id}`, "PATCH", request);
+    return await response.json() as Company;
+}
+
+export async function getUsersByCompany(authUser: AuthenticatedUser, companyId: string) {
+    const response = await sendJsonAuth(authUser, `companies/${companyId}/users`, "GET");
     return await response.json() as User[];
 }
 
-export async function addCompany(user: AuthenticatedUser, request: CreateCompanyRequest) {
-    const response = await sendJsonAuth(user, "companies", "POST", request);
-    return await response.json() as Company;
+export async function addUser(authUser: AuthenticatedUser, request: CreateUserRequest) {
+    const response = await sendJsonAuth(authUser, `companies/${request.companyId}/users`, "POST", request);
+    return await response.json() as User;
 }
 
-export async function editCompany(user: AuthenticatedUser, id: string, request: UpdateCompanyRequest) {
-    const response = await sendJsonAuth(user, `companies/${id}`, "PATCH", request);
-    return await response.json() as Company;
+export async function editUser(authUser: AuthenticatedUser, request: UpdateUserRequest) {
+    const response = await sendJsonAuth(authUser, `companies/${request.companyId}/users/${request.id}`, "PATCH", request);
+    return await response.json() as User;
 }
