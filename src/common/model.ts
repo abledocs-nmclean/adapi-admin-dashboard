@@ -1,3 +1,6 @@
+// helper to replace specific required properties with optional ones
+type MakeOptional<T, K extends keyof T> = Omit<T, K> & {[P in K]?: T[P]};
+
 export type AuthorizeRequest = {
     username: string,
     password: string,
@@ -14,12 +17,11 @@ export type Company = {
     templates: DocumentTemplate[]
 };
 
-// helper to replace specific required properties with optional ones
-type MakeOptional<T, K extends keyof T> = Omit<T, K> & {[P in K]?: T[P]};
+export type CreateCompanyRequest =
+    MakeOptional<Omit<Company, "id">, "adminUserIds" | "templates">;
 
-export type CreateCompanyRequest = MakeOptional<Omit<Company, "id">, "adminUserIds" | "templates">;
-
-export type UpdateCompanyRequest = Pick<Company, "id"> & Partial<Omit<Company, "name">>;
+export type UpdateCompanyRequest =
+    Pick<Company, "id"> & Partial<Omit<Company, "name">>;
 
 export type DocumentTemplate = {
     commonFileId: string,
@@ -33,8 +35,6 @@ export type User = {
     id: string,
     companyId: string,
     username: string,
-    password: string,
-    secondaryPassword: string,
     accessKey: string,
     passwordChangeRequired?: boolean,
     isActive: boolean,
@@ -42,6 +42,15 @@ export type User = {
     isTrial?: boolean
 };
 
-export type CreateUserRequest = MakeOptional<Omit<User, "id" | "passwordChangeRequired">, "accessKey">;
+export type SetUserPasswordRequest = {
+    password: string,
+    secondaryPassword: string
+}
 
-export type UpdateUserRequest = Pick<User, "id" | "companyId"> & Partial<User>;
+export type CreateUserRequest =
+    MakeOptional<Omit<User, "id" | "passwordChangeRequired">, "accessKey">
+    & SetUserPasswordRequest;
+
+export type UpdateUserRequest =
+    Pick<User, "id" | "companyId"> & Partial<User>
+    & Partial<SetUserPasswordRequest>;
