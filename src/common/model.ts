@@ -42,6 +42,6 @@ export type User = {
     isTrial?: boolean
 };
 
-export type CreateUserRequest = Omit<User, "id" | "passwordChangeRequired">;
+export type CreateUserRequest = MakeOptional<Omit<User, "id" | "passwordChangeRequired">, "accessKey">;
 
 export type UpdateUserRequest = Pick<User, "id" | "companyId"> & Partial<User>;

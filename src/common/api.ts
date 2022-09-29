@@ -1,3 +1,4 @@
+import * as uuid from "uuid";
 import {
         AuthorizeRequest, Company, CreateCompanyRequest, UpdateCompanyRequest,
         User, CreateUserRequest, UpdateUserRequest
@@ -67,6 +68,7 @@ export async function getUsersByCompany(authUser: AuthenticatedUser, companyId: 
 }
 
 export async function addUser(authUser: AuthenticatedUser, request: CreateUserRequest) {
+    request = {...request, accessKey: request.accessKey ?? uuid.v4()}
     const response = await sendJsonAuth(authUser, `companies/${request.companyId}/users`, "POST", request);
     return await response.json() as User;
 }
