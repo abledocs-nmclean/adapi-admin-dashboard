@@ -3,7 +3,7 @@ import { CheckBoxComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent, InputEventArgs } from '@syncfusion/ej2-react-inputs';
 import { Company } from "../common";
 import { EditForm, EditModel } from  "./common";
-import './CompanyEdit.css'
+import './common.css'
 
 export default class CompanyEdit extends EditForm<Company> {
     constructor(props: EditModel<Company>) {
@@ -12,7 +12,7 @@ export default class CompanyEdit extends EditForm<Company> {
 
     override render() {
         return (
-            <div className="company-edit">
+            <div className="edit-form">
                 <TextBoxComponent placeholder="Name" cssClass="e-outline" floatLabelType="Auto"
                     disabled={!this.state.isAdd}
                     name="name" value={this.state.name}

@@ -1,8 +1,8 @@
-.company-edit {
+.edit-form {
     padding-top: 5px;
 }
 
-.company-edit .error {
+.edit-form .error {
     background-color: #FF4444;
     color: white;
     margin-top: 1em;
@@ -10,11 +10,11 @@
     white-space: pre-wrap;
 }
 
-.company-edit .e-control-wrapper {
+.edit-form .e-control-wrapper {
     margin-bottom: 1em;
 }
 
-.company-edit .checkboxes {
+.edit-form .checkboxes {
     display: flex;
     column-gap: 1em;
 }
