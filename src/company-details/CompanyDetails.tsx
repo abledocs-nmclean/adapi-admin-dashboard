@@ -58,22 +58,26 @@ export default function CompanyDetails() {
         }
     ]);
 
+    const userEditFormRef = useRef<UserEdit>(null);
+
     function handleUserGridActionBegin(args: GridActionEventArgs) {
         if (args.requestType === "save") {
+            const editState = userEditFormRef.current!.state;
             const saveArgs = args as SaveEventArgs;
-            const editModel = saveArgs.data as EditModel<User>;
-            // const isValid = editModel.adoClientId !== undefined && editModel.name?.length;
-            // if (!isValid) {
-            //     args.cancel = true;
-            //     return;
-            // }
+            const isValid = Boolean(
+                editState.username?.length
+                && (!editState.isAdd || (editState.password?.length && editState.secondaryPassword?.length)));
+            if (!isValid) {
+                args.cancel = true;
+                return;
+            }
 
             if (saveArgs.action === "add") {
                 saveArgs.cancel = true;
                 usersGridRef.current!.closeEdit();
-                userAddMutation.mutate(editModel as CreateUserRequest);
+                userAddMutation.mutate({...editState, companyId: id} as CreateUserRequest);
             } else {
-                userEditMutation.mutate(editModel as UpdateUserRequest);
+                userEditMutation.mutate(editState as UpdateUserRequest);
             }
         }
     }
@@ -150,7 +154,7 @@ export default function CompanyDetails() {
                         editSettings={{
                             allowEditing: true, allowEditOnDblClick: false,
                             allowAdding: true, allowDeleting: false,
-                            mode: "Dialog", template: UserEdit
+                            mode: "Dialog", template: (params: EditModel<User>) => <UserEdit ref={userEditFormRef} {...params} />
                         }}
                         toolbar={[ToolbarItem.Add]}
                         actionBegin={handleUserGridActionBegin}

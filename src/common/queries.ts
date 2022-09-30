@@ -9,7 +9,7 @@ import { useAuthContext } from "./auth-context";
 import { AuthenticatedUser } from "./user";
 import {
         Company, CreateCompanyRequest, UpdateCompanyRequest,
-        User, CreateUserRequest, UpdateUserRequest, UserChangeParams
+        User, CreateUserRequest, UpdateUserRequest
     } from "./model";
 
 // React hook that updates the auth state when we detect authorization has expired from an error response
@@ -30,8 +30,7 @@ export function useCompanyQuery(companyId: string | undefined) {
         ["company", user, companyId],
         () => getCompany(user!, companyId!),
         {
-            enabled: user !== null && companyId !== undefined,
-            retry: false
+            enabled: user !== null && companyId !== undefined
         }
     );
 
@@ -49,7 +48,6 @@ export function useCompaniesQuery() {
         () => getAllCompanies(user!),
         {
             enabled: user !== null,
-            retry: false,
             onSuccess: (companies) => {
                 companies.forEach((company) => {
                     queryClient.setQueryData<Company>(["company", user, company.id], company);
@@ -118,8 +116,7 @@ export function useUsersQuery(companyId: string | undefined) {
         ["users", user, companyId],
         () => getUsersByCompany(user!, companyId!),
         {
-            enabled: user !== null && companyId !== undefined,
-            retry: false
+            enabled: user !== null && companyId !== undefined
         }
     );
 
@@ -156,8 +153,7 @@ async function updateCompanyAdminList(queryClient: QueryClient, authUser: Authen
     // get the existing admin user id list
     let { adminUserIds } = await queryClient.fetchQuery(
         ["company", authUser, user.companyId],
-        () => getCompany(authUser, user.companyId),
-        { retry: false });
+        () => getCompany(authUser, user.companyId));
 
     const idSet = new Set(adminUserIds);
     if (isAdmin && !idSet.has(user.id)) {
