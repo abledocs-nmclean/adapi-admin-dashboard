@@ -152,30 +152,34 @@ export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin
     }, [companyQuery.data?.adminUserIds, usersQuery.data]);
 }
 
-async function updateCompanyFromUserUpdate(queryClient: QueryClient, authUser: AuthenticatedUser, user: User, request: Partial<UserChangeParams>) {
-    // when a change to user.isAdmin is requested, update the company admin user id list
-    if (request.isAdmin !== undefined) {
-        // get the existing admin user id list
-        const { adminUserIds } = await queryClient.fetchQuery(
-            ["company", authUser, user.companyId],
-            () => getCompany(authUser, user.companyId),
-            { retry: false });
+async function updateCompanyAdminList(queryClient: QueryClient, authUser: AuthenticatedUser, user: User, isAdmin: boolean) {
+    // get the existing admin user id list
+    let { adminUserIds } = await queryClient.fetchQuery(
+        ["company", authUser, user.companyId],
+        () => getCompany(authUser, user.companyId),
+        { retry: false });
 
-        if (!adminUserIds.includes(user.id)) {
-            adminUserIds.push(user.id);
-
-            // add new admin user id to existing local company data
-            queryClient.setQueryData<Company>(["company", authUser, user.companyId], (existingCompany) => {
-                if (existingCompany) return {...existingCompany, adminUserIds};
-            } );
-            queryClient.setQueryData<Company[]>(["companies", authUser], (existingCompanies) => {
-                return existingCompanies?.map(c => c.id === user.companyId ? {...c, adminUserIds} : c);
-            });
-
-            // begin the API call to add the admin user id on the server in the background
-            editCompany(authUser, {id: user.companyId, adminUserIds});
-        }
+    const idSet = new Set(adminUserIds);
+    if (isAdmin && !idSet.has(user.id)) {
+        idSet.add(user.id);
+    } else if (idSet.has(user.id)) {
+        idSet.delete(user.id);
+    } else {
+        // nothing needed to be added or deleted
+        return;
     }
+    adminUserIds = Array.from(idSet);
+
+    // set new id list in existing local company data
+    queryClient.setQueryData<Company>(["company", authUser, user.companyId], (existingCompany) => {
+        if (existingCompany) return {...existingCompany, adminUserIds};
+    } );
+    queryClient.setQueryData<Company[]>(["companies", authUser], (existingCompanies) => {
+        return existingCompanies?.map(c => c.id === user.companyId ? {...c, adminUserIds} : c);
+    });
+
+    // begin the API call to add the admin user id on the server in the background
+    editCompany(authUser, {id: user.companyId, adminUserIds});
 }
 
 export function useUserAddMutation() {
@@ -192,7 +196,9 @@ export function useUserAddMutation() {
                     return [...existingUsers, user];
                 });
 
-                updateCompanyFromUserUpdate(queryClient, authUser!, user, request);
+                if (request.isAdmin !== undefined) {
+                    updateCompanyAdminList(queryClient, authUser!, user, request.isAdmin);
+                }
             }
         }
     );
@@ -214,7 +220,9 @@ export function useUserEditMutation() {
                     return existingUsers?.map(u => u.id === user.id ? user : u);
                 });
 
-                updateCompanyFromUserUpdate(queryClient, authUser!, user, request);
+                if (request.isAdmin !== undefined) {
+                    updateCompanyAdminList(queryClient, authUser!, user, request.isAdmin);
+                }
             }
         }
     );
