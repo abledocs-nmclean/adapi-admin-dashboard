@@ -49,7 +49,7 @@ export type UserChangeParams = {
 }
 
 export type CreateUserRequest =
-    MakeOptional<Omit<User, "id" | "passwordChangeRequired">, "accessKey">
+    MakeOptional<Omit<User, "id" | "passwordChangeRequired">, "accessKey" | "isTrial">
     & UserChangeParams;
 
 export type UpdateUserRequest =
