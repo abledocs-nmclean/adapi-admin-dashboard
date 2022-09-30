@@ -1,14 +1,15 @@
 import { useMemo, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/react-query";
 import {
+        ApiError,
         getAllCompanies, getCompany, addCompany, editCompany,
         getUsersByCompany, addUser, editUser
     } from "./api";
 import { useAuthContext } from "./auth-context";
-import { ApiError } from './api';
+import { AuthenticatedUser } from "./user";
 import {
         Company, CreateCompanyRequest, UpdateCompanyRequest,
-        User, CreateUserRequest, UpdateUserRequest
+        User, CreateUserRequest, UpdateUserRequest, UserChangeParams
     } from "./model";
 
 // React hook that updates the auth state when we detect authorization has expired from an error response
@@ -151,6 +152,32 @@ export function useComputedUsers(id: string | undefined): User[] | UserWithAdmin
     }, [companyQuery.data?.adminUserIds, usersQuery.data]);
 }
 
+async function updateCompanyFromUserUpdate(queryClient: QueryClient, authUser: AuthenticatedUser, user: User, request: Partial<UserChangeParams>) {
+    // when a change to user.isAdmin is requested, update the company admin user id list
+    if (request.isAdmin !== undefined) {
+        // get the existing admin user id list
+        const { adminUserIds } = await queryClient.fetchQuery(
+            ["company", authUser, user.companyId],
+            () => getCompany(authUser, user.companyId),
+            { retry: false });
+
+        if (!adminUserIds.includes(user.id)) {
+            adminUserIds.push(user.id);
+
+            // add new admin user id to existing local company data
+            queryClient.setQueryData<Company>(["company", authUser, user.companyId], (existingCompany) => {
+                if (existingCompany) return {...existingCompany, adminUserIds};
+            } );
+            queryClient.setQueryData<Company[]>(["companies", authUser], (existingCompanies) => {
+                return existingCompanies?.map(c => c.id === user.companyId ? {...c, adminUserIds} : c);
+            });
+
+            // begin the API call to add the admin user id on the server in the background
+            editCompany(authUser, {id: user.companyId, adminUserIds});
+        }
+    }
+}
+
 export function useUserAddMutation() {
     const queryClient = useQueryClient();
     const { user: authUser } = useAuthContext();
@@ -158,12 +185,14 @@ export function useUserAddMutation() {
     const mutation = useMutation(
         (request: CreateUserRequest) => addUser(authUser!, request),
         {
-            onSuccess: (user) => {
+            onSuccess: (user, request) => {
                 // if the users query for this company has already loaded, add the new user to the existing list
                 queryClient.setQueryData<User[]>(["users", authUser, user.companyId], (existingUsers) => {
                     if (!existingUsers) return;
                     return [...existingUsers, user];
                 });
+
+                updateCompanyFromUserUpdate(queryClient, authUser!, user, request);
             }
         }
     );
@@ -180,10 +209,12 @@ export function useUserEditMutation() {
     const mutation = useMutation(
         (request: UpdateUserRequest) => editUser(authUser!, request),
         {
-            onSuccess: (user) => {
+            onSuccess: (user, request) => {
                 queryClient.setQueryData<User[]>(["users", authUser, user.companyId], (existingUsers) => {
                     return existingUsers?.map(u => u.id === user.id ? user : u);
-                })
+                });
+
+                updateCompanyFromUserUpdate(queryClient, authUser!, user, request);
             }
         }
     );
