@@ -42,15 +42,16 @@ export type User = {
     isTrial?: boolean
 };
 
-export type SetUserPasswordRequest = {
+export type UserChangeParams = {
     password: string,
-    secondaryPassword: string
+    secondaryPassword: string,
+    isAdmin?: boolean
 }
 
 export type CreateUserRequest =
     MakeOptional<Omit<User, "id" | "passwordChangeRequired">, "accessKey">
-    & SetUserPasswordRequest;
+    & UserChangeParams;
 
 export type UpdateUserRequest =
     Pick<User, "id" | "companyId"> & Partial<User>
-    & Partial<SetUserPasswordRequest>;
+    & Partial<UserChangeParams>;
